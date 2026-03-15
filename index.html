@@ -1,0 +1,2312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brearley Lost and Found Class 1AB</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --pink: #e91e8c;
+  --purple: #7b2ff7;
+  --blue: #2196f3;
+  --teal: #00bcd4;
+  --green: #4caf50;
+  --orange: #ff9800;
+  --bg: #1a1a2e;
+  --bg2: #16213e;
+  --card: #0f3460;
+  --text: #e8e8e8;
+  --gold: #ffd700;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── Title Screen ── */
+#title-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  text-align: center;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  padding: 20px;
+}
+
+#title-screen h1 {
+  font-size: 4rem;
+  background: linear-gradient(135deg, var(--gold), var(--orange), var(--pink));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 10px;
+  text-shadow: none;
+  animation: glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+  from { filter: brightness(1); }
+  to { filter: brightness(1.3); }
+}
+
+#title-screen .subtitle {
+  font-size: 1.2rem;
+  color: #aaa;
+  margin-bottom: 40px;
+}
+
+.menu-btn {
+  display: block;
+  width: 280px;
+  padding: 15px 30px;
+  margin: 10px auto;
+  font-size: 1.1rem;
+  border: 2px solid var(--purple);
+  background: rgba(123, 47, 247, 0.15);
+  color: var(--text);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.menu-btn:hover {
+  background: var(--purple);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 20px rgba(123, 47, 247, 0.4);
+}
+
+/* ── Narrator Intro ── */
+#narrator-screen {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  text-align: center;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  padding: 20px;
+}
+
+.narrator-container {
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: narrator-enter 0.8s ease-out;
+}
+
+@keyframes narrator-enter {
+  from { opacity: 0; transform: translateY(40px) scale(0.9); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.narrator-character {
+  width: 200px;
+  height: 200px;
+  position: relative;
+  margin-bottom: 10px;
+}
+
+.narrator-body {
+  font-size: 0;
+  position: relative;
+  width: 200px;
+  height: 200px;
+}
+
+/* CSS cartoon teacher */
+.teacher-svg {
+  width: 200px;
+  height: 200px;
+}
+
+.speech-bubble {
+  background: white;
+  color: #333;
+  padding: 20px 25px;
+  border-radius: 20px;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  max-width: 500px;
+  position: relative;
+  margin-bottom: 30px;
+  box-shadow: 0 5px 30px rgba(0,0,0,0.3);
+  animation: bubble-pop 0.5s ease-out 0.5s both;
+}
+
+@keyframes bubble-pop {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.speech-bubble::before {
+  content: '';
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 15px solid transparent;
+  border-right: 15px solid transparent;
+  border-bottom: 15px solid white;
+}
+
+.speech-bubble .teacher-name {
+  font-weight: 700;
+  color: var(--purple);
+  font-size: 1.2rem;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.narrator-start-btn {
+  padding: 16px 50px;
+  font-size: 1.2rem;
+  border: none;
+  border-radius: 50px;
+  background: linear-gradient(135deg, var(--gold), var(--orange));
+  color: #1a1a2e;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+  animation: btn-pulse 1.5s ease-in-out infinite alternate;
+  animation-delay: 1s;
+}
+
+.narrator-start-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 5px 25px rgba(255,215,0,0.5);
+}
+
+@keyframes btn-pulse {
+  from { box-shadow: 0 2px 15px rgba(255,215,0,0.3); }
+  to { box-shadow: 0 5px 30px rgba(255,215,0,0.6); }
+}
+
+/* Minimized narrator icon */
+.narrator-mini {
+  position: fixed;
+  bottom: 15px;
+  left: 15px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--purple), var(--pink));
+  border: 2px solid rgba(255,255,255,0.3);
+  cursor: pointer;
+  z-index: 500;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+  box-shadow: 0 3px 15px rgba(123,47,247,0.4);
+  overflow: hidden;
+}
+
+.narrator-mini:hover {
+  transform: scale(1.15);
+  box-shadow: 0 5px 25px rgba(123,47,247,0.6);
+}
+
+.narrator-mini svg {
+  width: 40px;
+  height: 40px;
+}
+
+.narrator-mini-tooltip {
+  position: fixed;
+  bottom: 70px;
+  left: 15px;
+  background: var(--bg2);
+  color: var(--text);
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  z-index: 501;
+  display: none;
+  white-space: nowrap;
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 3px 15px rgba(0,0,0,0.3);
+}
+
+/* ── Turn Handover Screen ── */
+.handover-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.95);
+  z-index: 900;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  padding: 20px;
+}
+
+.handover-overlay.active {
+  display: flex;
+}
+
+.handover-overlay .handover-icon {
+  font-size: 4rem;
+  margin-bottom: 15px;
+}
+
+.handover-overlay .handover-name {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.handover-overlay .handover-msg {
+  font-size: 1rem;
+  color: #aaa;
+  margin-bottom: 30px;
+  max-width: 400px;
+}
+
+.handover-overlay .handover-btn {
+  padding: 14px 50px;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 50px;
+  background: linear-gradient(135deg, var(--purple), var(--pink));
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.handover-overlay .handover-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 5px 25px rgba(123,47,247,0.5);
+}
+
+/* ── Setup Screen ── */
+#setup-screen { display: none; min-height: 100vh; padding: 40px 20px; }
+
+.setup-container {
+  max-width: 500px;
+  margin: 0 auto;
+  background: var(--bg2);
+  padding: 30px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.setup-container h2 {
+  text-align: center;
+  margin-bottom: 25px;
+  color: var(--gold);
+}
+
+.form-group { margin-bottom: 20px; }
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #ccc;
+}
+
+.form-group input, .form-group select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: var(--bg);
+  color: var(--text);
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.character-select {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.char-option {
+  padding: 12px 8px;
+  text-align: center;
+  border: 2px solid rgba(255,255,255,0.15);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s;
+  background: rgba(255,255,255,0.03);
+}
+
+.char-option:hover { border-color: var(--purple); background: rgba(123,47,247,0.1); }
+.char-option.selected { border-color: var(--gold); background: rgba(255,215,0,0.15); }
+
+.char-option .char-icon { font-size: 2rem; margin-bottom: 5px; }
+.char-option .char-name { font-size: 0.85rem; font-weight: 600; }
+
+.btn-primary {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--purple), var(--pink));
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-top: 10px;
+}
+
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(123,47,247,0.4); }
+
+/* ── Game Screen ── */
+#game-screen { display: none; height: 100vh; }
+
+.game-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr 300px;
+  grid-template-rows: 60px 1fr;
+  height: 100vh;
+}
+
+.top-bar {
+  grid-column: 1 / -1;
+  background: var(--bg2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.top-bar h1 {
+  font-size: 1.3rem;
+  background: linear-gradient(135deg, var(--gold), var(--orange));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.turn-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.turn-badge {
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.dice-btn {
+  padding: 8px 20px;
+  border: 2px solid var(--gold);
+  background: rgba(255,215,0,0.1);
+  color: var(--gold);
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.dice-btn:hover { background: rgba(255,215,0,0.3); }
+.dice-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ── Left Panel: Detective Notebook ── */
+.left-panel {
+  background: var(--bg2);
+  border-right: 1px solid rgba(255,255,255,0.1);
+  overflow-y: auto;
+  padding: 15px;
+}
+
+.panel-title {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--gold);
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255,215,0,0.3);
+}
+
+.notebook-section { margin-bottom: 18px; }
+
+.notebook-section h4 {
+  font-size: 0.8rem;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.notebook-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.notebook-item:hover { background: rgba(255,255,255,0.05); }
+
+.notebook-item .mark {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.notebook-item.eliminated .mark {
+  background: #c62828;
+  border-color: #c62828;
+}
+
+.notebook-item.maybe .mark {
+  background: var(--orange);
+  border-color: var(--orange);
+}
+
+.notebook-item.confirmed .mark {
+  background: var(--green);
+  border-color: var(--green);
+}
+
+/* ── Board ── */
+.board-area {
+  background: var(--bg);
+  overflow: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+  gap: 6px;
+  width: 100%;
+  max-width: 700px;
+  aspect-ratio: 1;
+}
+
+.board-cell {
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  min-height: 0;
+  padding: 4px;
+}
+
+.room-cell {
+  background: var(--card);
+  border: 2px solid rgba(255,255,255,0.08);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.hallway-cell {
+  background: rgba(255,255,255,0.02);
+  border: 1px dashed rgba(255,255,255,0.06);
+}
+
+.room-cell:hover {
+  border-color: var(--purple);
+  transform: scale(1.03);
+  box-shadow: 0 5px 25px rgba(123,47,247,0.2);
+}
+
+.room-cell.highlight {
+  border-color: var(--gold);
+  box-shadow: 0 0 20px rgba(255,215,0,0.3);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(255,215,0,0.2); }
+  50% { box-shadow: 0 0 30px rgba(255,215,0,0.5); }
+}
+
+.room-icon { font-size: 1.6rem; margin-bottom: 2px; }
+.room-name { font-size: 0.7rem; font-weight: 600; text-align: center; line-height: 1.2; }
+
+.room-players {
+  display: flex;
+  gap: 3px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.player-token {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: white;
+  border: 2px solid rgba(255,255,255,0.5);
+}
+
+.secret-passage {
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  font-size: 0.65rem;
+  opacity: 0.7;
+  cursor: help;
+}
+
+.homeroom-cell {
+  background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,140,0,0.15)) !important;
+  border: 2px solid rgba(255,215,0,0.4) !important;
+}
+
+.homeroom-cell .room-name {
+  color: var(--gold);
+  font-weight: 700;
+}
+
+.homeroom-label {
+  font-size: 0.55rem;
+  color: rgba(255,215,0,0.7);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
+.hallway-cell .hall-label {
+  font-size: 0.6rem;
+  color: rgba(255,255,255,0.15);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.hallway-cell.hall-reachable {
+  background: rgba(255,215,0,0.1);
+  border: 1px dashed rgba(255,215,0,0.4);
+  cursor: pointer;
+}
+
+.hallway-cell.hall-reachable .hall-label {
+  color: rgba(255,215,0,0.6);
+  font-size: 0.9rem;
+}
+
+/* ── Dice ── */
+.dice-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dice-icon {
+  width: 44px;
+  height: 44px;
+  background: rgba(255,215,0,0.12);
+  border: 2px solid var(--gold);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  user-select: none;
+}
+
+.dice-icon:hover {
+  background: rgba(255,215,0,0.25);
+  transform: scale(1.1);
+}
+
+.dice-icon.rolling {
+  animation: dice-shake 0.15s ease-in-out infinite;
+  cursor: default;
+}
+
+.dice-icon.disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+@keyframes dice-shake {
+  0% { transform: rotate(0deg) scale(1.05); }
+  25% { transform: rotate(-12deg) scale(1.1); }
+  50% { transform: rotate(8deg) scale(1.05); }
+  75% { transform: rotate(-8deg) scale(1.1); }
+  100% { transform: rotate(0deg) scale(1.05); }
+}
+
+.dice-result {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--gold);
+  min-width: 80px;
+}
+
+/* ── Right Panel: Actions & Log ── */
+.right-panel {
+  background: var(--bg2);
+  border-left: 1px solid rgba(255,255,255,0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.actions-area {
+  padding: 15px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.action-btn {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 8px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.03);
+  color: var(--text);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.3s;
+}
+
+.action-btn:hover { background: rgba(123,47,247,0.15); border-color: var(--purple); }
+.action-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+.action-btn.suggest { border-color: var(--blue); }
+.action-btn.suggest:hover { background: rgba(33,150,243,0.15); }
+.action-btn.accuse { border-color: #c62828; }
+.action-btn.accuse:hover { background: rgba(198,40,40,0.15); }
+
+/* ── Hints Area ── */
+.hints-area {
+  padding: 15px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.hints-empty {
+  font-size: 0.8rem;
+  color: #666;
+  font-style: italic;
+}
+
+.hints-category {
+  margin-bottom: 10px;
+}
+
+.hints-category h4 {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hints-category h4.cat-person { color: var(--pink); }
+.hints-category h4.cat-item { color: var(--blue); }
+.hints-category h4.cat-room { color: var(--green); }
+
+.hint-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin: 2px 3px 2px 0;
+}
+
+.hint-chip.eliminated {
+  text-decoration: line-through;
+  opacity: 0.85;
+}
+
+.hint-chip.person {
+  background: rgba(233,30,140,0.15);
+  color: var(--pink);
+  border: 1px solid rgba(233,30,140,0.3);
+}
+
+.hint-chip.item {
+  background: rgba(33,150,243,0.15);
+  color: var(--blue);
+  border: 1px solid rgba(33,150,243,0.3);
+}
+
+.hint-chip.room {
+  background: rgba(76,175,80,0.15);
+  color: var(--green);
+  border: 1px solid rgba(76,175,80,0.3);
+}
+
+.hint-from {
+  font-size: 0.6rem;
+  opacity: 0.6;
+  font-weight: 400;
+}
+
+.hints-summary {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+  padding: 6px 8px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 6px;
+  font-size: 0.7rem;
+}
+
+.hints-summary span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.log-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 15px;
+}
+
+.log-area h3 {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--gold);
+  margin-bottom: 10px;
+}
+
+.log-entry {
+  padding: 8px 10px;
+  margin-bottom: 6px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  background: rgba(255,255,255,0.03);
+  border-left: 3px solid var(--purple);
+}
+
+.log-entry.system { border-left-color: var(--gold); }
+.log-entry.reveal { border-left-color: var(--green); }
+.log-entry.accusation { border-left-color: #c62828; }
+
+/* ── Modal ── */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-overlay.active { display: flex; }
+
+.modal {
+  background: var(--bg2);
+  border-radius: 16px;
+  padding: 30px;
+  max-width: 450px;
+  width: 100%;
+  border: 1px solid rgba(255,255,255,0.15);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: var(--gold);
+}
+
+.modal-select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: var(--bg);
+  color: var(--text);
+  border-radius: 8px;
+  font-size: 1rem;
+  margin-bottom: 15px;
+}
+
+.modal-select option { background: var(--bg); }
+
+.modal-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.modal-buttons button { flex: 1; }
+
+.btn-cancel {
+  padding: 12px;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: transparent;
+  color: var(--text);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.reveal-card {
+  text-align: center;
+  padding: 20px;
+  background: rgba(76,175,80,0.1);
+  border: 1px solid var(--green);
+  border-radius: 12px;
+  margin: 15px 0;
+}
+
+.reveal-card .reveal-icon { font-size: 2.5rem; margin-bottom: 10px; }
+.reveal-card .reveal-text { font-size: 1.1rem; font-weight: 600; }
+
+/* Win/Lose Modal */
+.result-modal h2 { font-size: 1.8rem; }
+.result-modal .result-icon { font-size: 4rem; text-align: center; margin-bottom: 15px; }
+.result-modal .solution-reveal {
+  background: rgba(255,255,255,0.05);
+  padding: 15px;
+  border-radius: 10px;
+  margin: 15px 0;
+}
+
+.solution-reveal .sol-line {
+  padding: 8px 0;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.your-cards-area {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.your-cards-area h4 {
+  font-size: 0.85rem;
+  color: var(--gold);
+  margin-bottom: 8px;
+}
+
+.your-cards {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.card-chip {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.card-chip.character { background: rgba(233,30,140,0.2); color: var(--pink); }
+.card-chip.item { background: rgba(33,150,243,0.2); color: var(--blue); }
+.card-chip.room { background: rgba(76,175,80,0.2); color: var(--green); }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .game-layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: 60px auto auto auto;
+  }
+  .left-panel { display: none; }
+  .right-panel { max-height: 250px; }
+  .board { max-width: 400px; }
+  #title-screen h1 { font-size: 2.5rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════ Title Screen ══════ -->
+<div id="title-screen">
+  <h1>Brearley Lost and Found Class 1AB</h1>
+  <p class="subtitle">A mystery deduction game for Class 1AB detectives</p>
+  <button class="menu-btn" onclick="showSetup('single')">1 Player (vs Computer)</button>
+  <button class="menu-btn" onclick="showSetup('multi')">2-5 Players (Pass & Play)</button>
+  <button class="menu-btn" onclick="showRules()">How to Play</button>
+</div>
+
+<!-- ══════ Setup Screen ══════ -->
+<div id="setup-screen">
+  <div class="setup-container">
+    <h2 id="setup-title">Game Setup</h2>
+    <div id="player-setup-area"></div>
+    <button class="btn-primary" onclick="startGame()">Start Game!</button>
+    <button class="btn-cancel" style="width:100%;margin-top:10px" onclick="backToTitle()">Back</button>
+  </div>
+</div>
+
+<!-- ══════ Narrator Intro ══════ -->
+<div id="narrator-screen">
+  <div class="narrator-container">
+    <div class="narrator-character">
+      <svg class="teacher-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <!-- Hair -->
+        <ellipse cx="100" cy="72" rx="52" ry="55" fill="#3d2314"/>
+        <!-- Face -->
+        <ellipse cx="100" cy="80" rx="42" ry="44" fill="#f4c28d"/>
+        <!-- Hair bangs -->
+        <path d="M58 65 Q70 40 100 42 Q130 40 142 65 Q135 50 100 48 Q65 50 58 65Z" fill="#3d2314"/>
+        <!-- Eyes -->
+        <ellipse cx="84" cy="78" rx="5" ry="6" fill="#2c1810"/>
+        <ellipse cx="116" cy="78" rx="5" ry="6" fill="#2c1810"/>
+        <circle cx="86" cy="76" r="2" fill="white" opacity="0.8"/>
+        <circle cx="118" cy="76" r="2" fill="white" opacity="0.8"/>
+        <!-- Eyebrows -->
+        <path d="M74 68 Q84 63 94 68" stroke="#3d2314" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <path d="M106 68 Q116 63 126 68" stroke="#3d2314" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <!-- Glasses -->
+        <rect x="72" y="70" width="24" height="18" rx="9" fill="none" stroke="#666" stroke-width="2"/>
+        <rect x="104" y="70" width="24" height="18" rx="9" fill="none" stroke="#666" stroke-width="2"/>
+        <line x1="96" y1="79" x2="104" y2="79" stroke="#666" stroke-width="2"/>
+        <!-- Nose -->
+        <path d="M97 86 Q100 92 103 86" stroke="#d4a574" stroke-width="1.5" fill="none"/>
+        <!-- Smile -->
+        <path d="M85 96 Q100 108 115 96" stroke="#c4785c" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <!-- Cheeks -->
+        <circle cx="76" cy="94" r="6" fill="#f0a0a0" opacity="0.4"/>
+        <circle cx="124" cy="94" r="6" fill="#f0a0a0" opacity="0.4"/>
+        <!-- Body / Shirt -->
+        <path d="M60 125 Q65 115 80 112 Q100 108 120 112 Q135 115 140 125 L145 170 L55 170Z" fill="#5b3cc4"/>
+        <!-- Collar -->
+        <path d="M88 112 L100 125 L112 112" stroke="white" stroke-width="2" fill="none"/>
+        <!-- Apple (teacher prop) -->
+        <circle cx="155" cy="155" r="12" fill="#e53935"/>
+        <path d="M155 143 Q158 138 160 142" stroke="#4caf50" stroke-width="2" fill="none"/>
+        <ellipse cx="157" cy="143" rx="4" ry="3" fill="#4caf50"/>
+      </svg>
+    </div>
+    <div class="speech-bubble">
+      <span class="teacher-name">Mrs Uy</span>
+      Welcome class! Someone has lost an item somewhere in the school and one of your classmates found it. I need your help to work out <strong>what item was lost</strong>, <strong>where it was found</strong>, and <strong>who found it</strong>. Move around the school, ask questions, and use your detective skills to solve the mystery!<br><br>Are you ready to help?
+    </div>
+    <button class="narrator-start-btn" onclick="dismissNarrator()">Let's Go!</button>
+  </div>
+</div>
+
+<!-- Minimized narrator icon (shown during gameplay) -->
+<div class="narrator-mini" id="narrator-mini" onclick="toggleNarratorTip()" title="Mrs Uy">
+  <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="100" cy="72" rx="52" ry="55" fill="#3d2314"/>
+    <ellipse cx="100" cy="80" rx="42" ry="44" fill="#f4c28d"/>
+    <path d="M58 65 Q70 40 100 42 Q130 40 142 65 Q135 50 100 48 Q65 50 58 65Z" fill="#3d2314"/>
+    <ellipse cx="84" cy="78" rx="5" ry="6" fill="#2c1810"/>
+    <ellipse cx="116" cy="78" rx="5" ry="6" fill="#2c1810"/>
+    <rect x="72" y="70" width="24" height="18" rx="9" fill="none" stroke="#666" stroke-width="2"/>
+    <rect x="104" y="70" width="24" height="18" rx="9" fill="none" stroke="#666" stroke-width="2"/>
+    <line x1="96" y1="79" x2="104" y2="79" stroke="#666" stroke-width="2"/>
+    <path d="M85 96 Q100 108 115 96" stroke="#c4785c" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M60 125 Q65 115 80 112 Q100 108 120 112 Q135 115 140 125 L145 170 L55 170Z" fill="#5b3cc4"/>
+  </svg>
+</div>
+<div class="narrator-mini-tooltip" id="narrator-tooltip">Mrs Uy says: "You can do it, detectives!"</div>
+
+<!-- ══════ Game Screen ══════ -->
+<div id="game-screen">
+  <div class="game-layout">
+    <div class="top-bar">
+      <h1>Brearley L&F 1AB</h1>
+      <div class="turn-info">
+        <span id="turn-text" class="turn-badge" style="background:var(--purple)">Turn 1</span>
+        <span id="current-player-name" class="turn-badge" style="background:var(--pink)">Player</span>
+        <div class="dice-container" id="dice-area">
+          <div class="dice-icon" id="dice-icon" onclick="rollDice()" title="Click to roll!">🎲</div>
+          <span class="dice-result" id="dice-result"></span>
+        </div>
+        <button id="end-turn-btn" class="dice-btn" onclick="endTurn()" style="display:none">End Turn</button>
+        <button class="dice-btn" onclick="backToTitle()" style="border-color:#c62828;color:#c62828">Restart</button>
+      </div>
+    </div>
+
+    <!-- Left: Detective Notebook -->
+    <div class="left-panel">
+      <div class="panel-title">Detective Notebook</div>
+      <div id="notebook"></div>
+      <div class="your-cards-area">
+        <h4>Your Cards</h4>
+        <div id="your-cards" class="your-cards"></div>
+      </div>
+    </div>
+
+    <!-- Center: Board -->
+    <div class="board-area">
+      <div class="board" id="board"></div>
+    </div>
+
+    <!-- Right: Actions & Log -->
+    <div class="right-panel">
+      <div class="actions-area">
+        <div class="panel-title">Actions</div>
+        <button id="suggest-btn" class="action-btn suggest" onclick="openSuggestion()" disabled>Make a Suggestion</button>
+        <button id="accuse-btn" class="action-btn accuse" onclick="openAccusation()">Make an Accusation!</button>
+      </div>
+      <div class="hints-area" id="hints-area">
+        <div class="panel-title">Clues Received</div>
+        <div id="hints-content"><p class="hints-empty">No clues yet — make suggestions to gather intel!</p></div>
+      </div>
+      <div class="log-area">
+        <h3>Game Log</h3>
+        <div id="game-log"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ Turn Handover ══════ -->
+<div class="handover-overlay" id="handover-overlay">
+  <div class="handover-icon" id="handover-icon"></div>
+  <div class="handover-name" id="handover-name"></div>
+  <div class="handover-msg">Pass the device to this player.<br>No peeking at other players' clues!</div>
+  <button class="handover-btn" onclick="confirmHandover()">I'm Ready!</button>
+</div>
+
+<!-- ══════ Modals ══════ -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal" id="modal-content"></div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// Game Data
+// ═══════════════════════════════════════════════
+const CHARACTERS = [
+  { name: 'Penelope', color: '#e91e8c', icon: '👧' },
+  { name: 'Shayna', color: '#7b2ff7', icon: '👧🏻' },
+  { name: 'Audrey', color: '#2196f3', icon: '👧🏼' },
+  { name: 'Gia', color: '#00bcd4', icon: '👧🏽' },
+  { name: 'Aomi', color: '#4caf50', icon: '👧🏾' },
+];
+
+const ITEMS = [
+  { name: 'Library Book', icon: '📚' },
+  { name: 'Backpack', icon: '🎒' },
+  { name: 'Lunchbox', icon: '🍱' },
+  { name: 'Water Bottle', icon: '🧴' },
+  { name: 'Jacket', icon: '🧥' },
+  { name: 'Pencil Case', icon: '✏️' },
+];
+
+const ROOMS = [
+  { name: 'Science', icon: '🔬' },
+  { name: 'FunFit', icon: '🤸' },
+  { name: 'PE', icon: '🏀' },
+  { name: 'Playdeck', icon: '🛝' },
+  { name: 'Library', icon: '📖' },
+  { name: 'Restroom', icon: '🚻' },
+  { name: 'Lunch', icon: '🍽️' },
+  { name: 'Performance Hall', icon: '🎭' },
+];
+
+// Special room index for Homeroom (accusation room in center)
+const HOMEROOM_INDEX = 8;
+const HOMEROOM = { name: 'Homeroom', icon: '🏫' };
+
+// 5x5 board layout: room index or null (hallway)
+// 8 regular rooms + Homeroom (8) in the center
+const BOARD_LAYOUT = [
+  // Row 0: top wing
+  [0,    null, 1,    null, 2   ],
+  // Row 1: hallways
+  [null, null, null, null, null],
+  // Row 2: middle wing
+  [3,    null, 8,    null, 4   ],
+  // Row 3: hallways
+  [null, null, null, null, null],
+  // Row 4: bottom wing
+  [5,    null, 6,    null, 7   ],
+];
+
+// Room grid positions (row, col) derived from BOARD_LAYOUT
+const ROOM_POSITIONS = {};
+BOARD_LAYOUT.forEach((row, r) => {
+  row.forEach((cell, c) => {
+    if (cell !== null) ROOM_POSITIONS[cell] = { row: r, col: c };
+  });
+});
+
+// Secret passages connect opposite corners
+const SECRET_PASSAGES = {
+  0: 7,  // Science (top-left) <-> Performance Hall (bottom-right)
+  7: 0,
+  2: 5,  // PE (top-right) <-> Restroom (bottom-left)
+  5: 2,
+};
+
+const DICE_FACES = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
+let isRolling = false;
+
+// ═══════════════════════════════════════════════
+// Game State
+// ═══════════════════════════════════════════════
+let gameMode = 'single';
+let players = [];
+let currentPlayerIndex = 0;
+let turnNumber = 1;
+let solution = {};
+let deck = [];
+let gameOver = false;
+let diceRoll = 0;
+let hasMovedThisTurn = false;
+let hasSuggestedThisTurn = false;
+let eliminatedPlayers = new Set();
+let hintsReceived = []; // legacy global - now per-player via p.hints
+
+// Each player: { name, characterIndex, pos: {row,col}, cards[], notebook: { characters: {}, items: {}, rooms: {} }, isAI }
+// notebook marks: 0 = unknown, 1 = eliminated, 2 = maybe, 3 = confirmed/have
+
+// ═══════════════════════════════════════════════
+// Screen Management
+// ═══════════════════════════════════════════════
+function showScreen(id) {
+  ['title-screen', 'setup-screen', 'game-screen', 'narrator-screen'].forEach(s => {
+    document.getElementById(s).style.display = 'none';
+  });
+  document.getElementById('narrator-mini').style.display = 'none';
+  document.getElementById('narrator-tooltip').style.display = 'none';
+  const el = document.getElementById(id);
+  if (id === 'game-screen') {
+    el.style.display = 'block';
+    document.getElementById('narrator-mini').style.display = 'flex';
+  } else if (id === 'title-screen') {
+    el.style.display = 'flex';
+  } else if (id === 'narrator-screen') {
+    el.style.display = 'flex';
+  } else {
+    el.style.display = 'block';
+  }
+}
+
+function backToTitle() {
+  showScreen('title-screen');
+}
+
+function showSetup(mode) {
+  gameMode = mode;
+  showScreen('setup-screen');
+  document.getElementById('setup-title').textContent = mode === 'single' ? 'Single Player Setup' : 'Multiplayer Setup';
+  buildSetupForm();
+}
+
+function buildSetupForm() {
+  const area = document.getElementById('player-setup-area');
+  let html = '';
+
+  if (gameMode === 'single') {
+    html += `
+      <div class="form-group">
+        <label>Your Name</label>
+        <input type="text" id="p1-name" placeholder="Enter your name" value="Detective">
+      </div>
+      <div class="form-group">
+        <label>Choose Your Character</label>
+        <div class="character-select" id="char-select-0">
+          ${CHARACTERS.map((c, i) => `
+            <div class="char-option ${i === 0 ? 'selected' : ''}" onclick="selectChar(0, ${i})">
+              <div class="char-icon">${c.icon}</div>
+              <div class="char-name">${c.name}</div>
+            </div>`).join('')}
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Number of Computer Players</label>
+        <select id="ai-count">
+          <option value="2">2 (Easy)</option>
+          <option value="3" selected>3 (Normal)</option>
+          <option value="4">4 (Hard)</option>
+        </select>
+      </div>`;
+  } else {
+    const currentCount = document.getElementById('player-count')?.value || '3';
+    html += `
+      <div class="form-group">
+        <label>Number of Players</label>
+        <select id="player-count" onchange="buildSetupForm()">
+          <option value="2" ${currentCount === '2' ? 'selected' : ''}>2 Players</option>
+          <option value="3" ${currentCount === '3' ? 'selected' : ''}>3 Players</option>
+          <option value="4" ${currentCount === '4' ? 'selected' : ''}>4 Players</option>
+          <option value="5" ${currentCount === '5' ? 'selected' : ''}>5 Players</option>
+        </select>
+      </div>`;
+    const count = parseInt(currentCount);
+    for (let p = 0; p < count; p++) {
+      html += `
+        <div class="form-group">
+          <label>Player ${p + 1} Name</label>
+          <input type="text" id="p${p}-name" placeholder="Player ${p + 1}" value="Player ${p + 1}">
+        </div>
+        <div class="form-group">
+          <label>Player ${p + 1} Character</label>
+          <div class="character-select" id="char-select-${p}">
+            ${CHARACTERS.map((c, i) => `
+              <div class="char-option ${i === p ? 'selected' : ''}" onclick="selectChar(${p}, ${i})">
+                <div class="char-icon">${c.icon}</div>
+                <div class="char-name">${c.name}</div>
+              </div>`).join('')}
+          </div>
+        </div>`;
+    }
+    if (count < 5) {
+      html += `
+        <div class="form-group">
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
+            <input type="checkbox" id="fill-ai" checked style="width:auto;transform:scale(1.3)">
+            Fill remaining ${5 - count} spot${5 - count > 1 ? 's' : ''} with computer players
+          </label>
+        </div>`;
+    }
+  }
+  area.innerHTML = html;
+}
+
+const selectedChars = [0, 1, 2, 3, 4, 5];
+function selectChar(playerIdx, charIdx) {
+  selectedChars[playerIdx] = charIdx;
+  const grid = document.getElementById(`char-select-${playerIdx}`);
+  if (!grid) return;
+  grid.querySelectorAll('.char-option').forEach((el, i) => {
+    el.classList.toggle('selected', i === charIdx);
+  });
+}
+
+// ═══════════════════════════════════════════════
+// Rules
+// ═══════════════════════════════════════════════
+function showRules() {
+  openModal(`
+    <h2>How to Play</h2>
+    <div style="font-size:0.9rem;line-height:1.6">
+      <p><strong>The Mystery:</strong> Someone found a lost item in one of the school rooms. Your job is to figure out <em>WHO</em> found it, <em>WHAT</em> the item was, and <em>WHERE</em> it was found!</p>
+      <br>
+      <p><strong>Setup:</strong> The game secretly picks one character, one item, and one room as the solution. The remaining cards are dealt to all players.</p>
+      <br>
+      <p><strong>On Your Turn:</strong></p>
+      <ol style="margin-left:20px">
+        <li>Roll the dice to see how many rooms you can move</li>
+        <li>Click a highlighted room to move there</li>
+        <li>Make a <strong>Suggestion</strong> about who found what in the room you're in</li>
+        <li>Other players must show you a card if they have one that matches your suggestion</li>
+      </ol>
+      <br>
+      <p><strong>Detective Notebook:</strong> Click items in your notebook to mark them. Use this to track what you've learned!</p>
+      <ul style="margin-left:20px">
+        <li>Click once = <span style="color:#c62828">Eliminated</span> (not the answer)</li>
+        <li>Click twice = <span style="color:#ff9800">Maybe</span> (possibly the answer)</li>
+        <li>Click three times = <span style="color:#4caf50">Confirmed</span></li>
+        <li>Click four times = Clear</li>
+      </ul>
+      <br>
+      <p><strong>Secret Passages:</strong> Rooms in opposite corners are connected by secret passages (look for the 🚪 icon). Science connects to Performance Hall, and PE connects to Restroom. You can use a passage to travel instantly, no matter what you rolled!</p>
+      <br>
+      <p><strong>Accusation:</strong> When you think you know the answer, you must move to <strong>Homeroom</strong> (the special room in the center of the board) to make your accusation. But be careful — if you're wrong, you're out of the game!</p>
+    </div>
+    <button class="btn-primary" onclick="closeModal()" style="margin-top:20px">Got it!</button>
+  `);
+}
+
+// ═══════════════════════════════════════════════
+// Game Start
+// ═══════════════════════════════════════════════
+function startGame() {
+  players = [];
+  eliminatedPlayers = new Set();
+  hintsReceived = [];
+  gameOver = false;
+  turnNumber = 1;
+  currentPlayerIndex = 0;
+
+  if (gameMode === 'single') {
+    const name = document.getElementById('p1-name').value || 'Detective';
+    const aiCount = parseInt(document.getElementById('ai-count').value);
+    players.push({ name, characterIndex: selectedChars[0], isAI: false });
+
+    const usedChars = new Set([selectedChars[0]]);
+    for (let i = 0; i < aiCount; i++) {
+      let ci = 0;
+      while (usedChars.has(ci)) ci++;
+      usedChars.add(ci);
+      players.push({ name: CHARACTERS[ci].name, characterIndex: ci, isAI: true });
+    }
+  } else {
+    const count = parseInt(document.getElementById('player-count').value);
+    for (let i = 0; i < count; i++) {
+      const name = document.getElementById(`p${i}-name`).value || `Player ${i + 1}`;
+      players.push({ name, characterIndex: selectedChars[i], isAI: false });
+    }
+    // Fill remaining spots with AI if checked
+    const fillAI = document.getElementById('fill-ai');
+    if (fillAI && fillAI.checked && players.length < 5) {
+      const usedChars = new Set(players.map(p => p.characterIndex));
+      while (players.length < 5) {
+        let ci = 0;
+        while (usedChars.has(ci)) ci++;
+        usedChars.add(ci);
+        players.push({ name: CHARACTERS[ci].name, characterIndex: ci, isAI: true });
+      }
+    }
+  }
+
+  // Assign starting positions (spread players around the school)
+  const startRooms = [0, 2, 5, 7, 3];
+  players.forEach((p, i) => {
+    const roomIdx = startRooms[i % startRooms.length];
+    p.pos = { ...ROOM_POSITIONS[roomIdx] };
+    p.cards = [];
+    p.hints = [];
+    p.notebook = {
+      characters: {},
+      items: {},
+      rooms: {},
+    };
+  });
+
+  // Pick solution
+  solution = {
+    character: Math.floor(Math.random() * CHARACTERS.length),
+    item: Math.floor(Math.random() * ITEMS.length),
+    room: Math.floor(Math.random() * ROOMS.length),
+  };
+
+  // Build deck (excluding solution)
+  deck = [];
+  CHARACTERS.forEach((_, i) => { if (i !== solution.character) deck.push({ type: 'character', index: i }); });
+  ITEMS.forEach((_, i) => { if (i !== solution.item) deck.push({ type: 'item', index: i }); });
+  ROOMS.forEach((_, i) => { if (i !== solution.room) deck.push({ type: 'room', index: i }); });
+
+  // Shuffle and deal
+  shuffle(deck);
+  let di = 0;
+  while (di < deck.length) {
+    for (let p = 0; p < players.length && di < deck.length; p++, di++) {
+      players[p].cards.push(deck[di]);
+    }
+  }
+
+  // Mark own cards in notebook for AI players
+  players.forEach(p => {
+    p.cards.forEach(card => {
+      const cat = card.type === 'character' ? 'characters' : card.type === 'item' ? 'items' : 'rooms';
+      p.notebook[cat][card.index] = 1; // eliminated - they have the card
+    });
+  });
+
+  showScreen('narrator-screen');
+}
+
+function dismissNarrator() {
+  showScreen('game-screen');
+  clearLog();
+  addLog(`Mrs Uy: "Good luck, detectives! Find the lost item!"`, 'system');
+  addLog(`${players.length} detectives are on the case!`, 'system');
+
+  if (players[currentPlayerIndex].isAI) {
+    renderBoard();
+    renderNotebook();
+    renderYourCards();
+    renderHints();
+    updateTurnUI();
+    setTimeout(doAITurn, 800);
+  } else if (gameMode === 'multi') {
+    // Show handover for the first human player
+    showHandover();
+  } else {
+    renderBoard();
+    renderNotebook();
+    renderYourCards();
+    renderHints();
+    updateTurnUI();
+  }
+}
+
+const MRS_UY_TIPS = [
+  "Keep track of which cards you've seen!",
+  "If nobody can disprove a suggestion, that's a big clue!",
+  "Remember to check your notebook!",
+  "Try to visit rooms you haven't been to yet!",
+  "Use the secret passages to move faster!",
+  "Head to Homeroom when you're ready to accuse!",
+  "You can do it, detectives!",
+  "Pay attention to what other players suggest!",
+  "Process of elimination is your best friend!",
+];
+
+function toggleNarratorTip() {
+  const tooltip = document.getElementById('narrator-tooltip');
+  if (tooltip.style.display === 'block') {
+    tooltip.style.display = 'none';
+  } else {
+    const tip = MRS_UY_TIPS[Math.floor(Math.random() * MRS_UY_TIPS.length)];
+    tooltip.textContent = `Mrs Uy says: "${tip}"`;
+    tooltip.style.display = 'block';
+    setTimeout(() => { tooltip.style.display = 'none'; }, 4000);
+  }
+}
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+}
+
+// ═══════════════════════════════════════════════
+// Rendering
+// ═══════════════════════════════════════════════
+// Get room index at a grid position, or null if hallway
+function getRoomAt(row, col) {
+  if (row < 0 || row >= 5 || col < 0 || col >= 5) return null;
+  return BOARD_LAYOUT[row][col];
+}
+
+// Get the room index a player is currently in, or null if in a hallway
+function getPlayerRoom(player) {
+  return getRoomAt(player.pos.row, player.pos.col);
+}
+
+function getReachableCells(fromPos, steps) {
+  // BFS from grid position
+  // Returns all cells reachable in 1 to N steps (up to the dice roll)
+  if (steps <= 0) return new Map();
+  const startKey = `${fromPos.row},${fromPos.col}`;
+  const visited = new Map(); // key -> shortest distance
+  visited.set(startKey, 0);
+  const queue = [{ r: fromPos.row, c: fromPos.col, dist: 0 }];
+  const dirs = [[0,1],[0,-1],[1,0],[-1,0]];
+
+  while (queue.length > 0) {
+    const { r, c, dist } = queue.shift();
+    if (dist >= steps) continue;
+    for (const [dr, dc] of dirs) {
+      const nr = r + dr, nc = c + dc;
+      if (nr < 0 || nr >= 5 || nc < 0 || nc >= 5) continue;
+      const key = `${nr},${nc}`;
+      if (!visited.has(key)) {
+        visited.set(key, dist + 1);
+        queue.push({ r: nr, c: nc, dist: dist + 1 });
+      }
+    }
+  }
+
+  // Include all cells from distance 1 up to steps (not the starting cell)
+  const reachable = new Map();
+  for (const [key, dist] of visited) {
+    if (dist > 0 && dist <= steps) reachable.set(key, dist);
+  }
+
+  // Secret passage: if currently in a corner room with a passage
+  const currentRoom = getRoomAt(fromPos.row, fromPos.col);
+  if (currentRoom !== null && SECRET_PASSAGES[currentRoom] !== undefined) {
+    const destRoom = SECRET_PASSAGES[currentRoom];
+    const destPos = ROOM_POSITIONS[destRoom];
+    reachable.set(`${destPos.row},${destPos.col}`, 1);
+  }
+
+  return reachable;
+}
+
+function renderBoard() {
+  const board = document.getElementById('board');
+  let html = '';
+
+  // Compute reachable cells if dice has been rolled
+  let reachable = new Map();
+  const showReachable = !gameOver && !players[currentPlayerIndex].isAI &&
+    currentPlayerIndex < players.length && diceRoll > 0 && !hasMovedThisTurn;
+  if (showReachable) {
+    reachable = getReachableCells(players[currentPlayerIndex].pos, diceRoll);
+  }
+
+  for (let r = 0; r < 5; r++) {
+    for (let c = 0; c < 5; c++) {
+      const cellKey = `${r},${c}`;
+      const isReachable = reachable.has(cellKey);
+      const roomIdx = BOARD_LAYOUT[r][c];
+
+      // Players at this grid cell
+      const playersHere = players
+        .map((p, pi) => ({ ...p, pi }))
+        .filter(p => p.pos.row === r && p.pos.col === c && !eliminatedPlayers.has(p.pi));
+      const tokens = playersHere.map(p =>
+        `<div class="player-token" style="background:${CHARACTERS[p.characterIndex].color}" title="${p.name}">${p.name[0]}</div>`
+      ).join('');
+
+      if (roomIdx !== null) {
+        const isHomeroom = roomIdx === HOMEROOM_INDEX;
+        const room = isHomeroom ? HOMEROOM : ROOMS[roomIdx];
+        const hasPassage = !isHomeroom && SECRET_PASSAGES[roomIdx] !== undefined;
+        const passageTarget = hasPassage ? ROOMS[SECRET_PASSAGES[roomIdx]].name : '';
+
+        html += `
+          <div class="board-cell room-cell ${isHomeroom ? 'homeroom-cell' : ''} ${isReachable ? 'highlight' : ''}" onclick="clickCell(${r},${c})">
+            ${hasPassage ? `<span class="secret-passage" title="Secret passage to ${passageTarget}">🚪</span>` : ''}
+            <div class="room-icon">${room.icon}</div>
+            <div class="room-name">${room.name}</div>
+            ${isHomeroom ? '<div class="homeroom-label">Make Accusation Here</div>' : ''}
+            <div class="room-players">${tokens}</div>
+          </div>`;
+      } else {
+        // Hallway cell
+        html += `<div class="board-cell hallway-cell ${isReachable ? 'hall-reachable' : ''}" onclick="clickCell(${r},${c})">
+          ${tokens ? `<div class="room-players">${tokens}</div>` : ''}
+          <span class="hall-label">${isReachable ? '👣' : 'Hall'}</span>
+        </div>`;
+      }
+    }
+  }
+
+  board.innerHTML = html;
+}
+
+function canMoveToCell(fromPos, toRow, toCol, steps) {
+  if (fromPos.row === toRow && fromPos.col === toCol) return false;
+  const reachable = getReachableCells(fromPos, steps);
+  return reachable.has(`${toRow},${toCol}`);
+}
+
+function canMoveToRoom(fromPos, toRoomIdx, steps) {
+  const pos = ROOM_POSITIONS[toRoomIdx];
+  return canMoveToCell(fromPos, pos.row, pos.col, steps);
+}
+
+function renderNotebook() {
+  const nb = document.getElementById('notebook');
+  const p = players[getActiveHumanIndex()];
+  if (!p) return;
+
+  const renderSection = (title, items, category) => {
+    let html = `<div class="notebook-section"><h4>${title}</h4>`;
+    items.forEach((item, i) => {
+      const state = p.notebook[category][i] || 0;
+      const cls = state === 1 ? 'eliminated' : state === 2 ? 'maybe' : state === 3 ? 'confirmed' : '';
+      const mark = state === 1 ? '✕' : state === 2 ? '?' : state === 3 ? '✓' : '';
+      html += `<div class="notebook-item ${cls}" onclick="toggleNotebook('${category}', ${i})">
+        <span class="mark">${mark}</span>
+        <span>${item.icon || ''} ${item.name}</span>
+      </div>`;
+    });
+    html += '</div>';
+    return html;
+  };
+
+  nb.innerHTML =
+    renderSection('Characters', CHARACTERS, 'characters') +
+    renderSection('Lost Items', ITEMS, 'items') +
+    renderSection('Rooms', ROOMS, 'rooms');
+}
+
+function toggleNotebook(category, index) {
+  const p = players[getActiveHumanIndex()];
+  const current = p.notebook[category][index] || 0;
+  p.notebook[category][index] = (current + 1) % 4;
+  renderNotebook();
+}
+
+function getActiveHumanIndex() {
+  // In multiplayer, return the current player if human; in single player, return the one human
+  if (gameMode === 'multi') {
+    return currentPlayerIndex;
+  }
+  const idx = players.findIndex(p => !p.isAI);
+  return idx >= 0 ? idx : 0;
+}
+
+function renderYourCards() {
+  const container = document.getElementById('your-cards');
+  const p = players[getActiveHumanIndex()];
+  if (!p) return;
+  container.innerHTML = p.cards.map(card => {
+    const data = card.type === 'character' ? CHARACTERS[card.index] :
+                 card.type === 'item' ? ITEMS[card.index] : ROOMS[card.index];
+    return `<span class="card-chip ${card.type}">${data.icon || ''} ${data.name}</span>`;
+  }).join('');
+}
+
+function renderHints() {
+  const container = document.getElementById('hints-content');
+  const currentP = players[getActiveHumanIndex()];
+  const hintsReceived = currentP ? currentP.hints : [];
+  if (hintsReceived.length === 0) {
+    container.innerHTML = '<p class="hints-empty">No clues yet — make suggestions to gather intel!</p>';
+    return;
+  }
+
+  const personHints = hintsReceived.filter(h => h.type === 'character');
+  const itemHints = hintsReceived.filter(h => h.type === 'item');
+  const roomHints = hintsReceived.filter(h => h.type === 'room');
+
+  // Count remaining unknowns per category
+  const totalPersons = CHARACTERS.length;
+  const totalItems = ITEMS.length;
+  const totalRooms = ROOMS.length;
+
+  let html = '';
+
+  // Summary bar
+  html += `<div class="hints-summary">
+    <span style="color:var(--pink)">👧 ${personHints.length}/${totalPersons}</span>
+    <span style="color:var(--blue)">🎒 ${itemHints.length}/${totalItems}</span>
+    <span style="color:var(--green)">🏫 ${roomHints.length}/${totalRooms}</span>
+    <span style="color:var(--gold)">Total: ${hintsReceived.length}</span>
+  </div>`;
+
+  if (personHints.length > 0) {
+    html += `<div class="hints-category">
+      <h4 class="cat-person">👧 People Eliminated</h4>
+      <div>${personHints.map(h => {
+        const c = CHARACTERS[h.index];
+        return `<span class="hint-chip person eliminated">${c.icon} ${c.name} <span class="hint-from">via ${h.shownBy}</span></span>`;
+      }).join('')}</div>
+    </div>`;
+  }
+
+  if (itemHints.length > 0) {
+    html += `<div class="hints-category">
+      <h4 class="cat-item">🎒 Items Eliminated</h4>
+      <div>${itemHints.map(h => {
+        const item = ITEMS[h.index];
+        return `<span class="hint-chip item eliminated">${item.icon} ${item.name} <span class="hint-from">via ${h.shownBy}</span></span>`;
+      }).join('')}</div>
+    </div>`;
+  }
+
+  if (roomHints.length > 0) {
+    html += `<div class="hints-category">
+      <h4 class="cat-room">🏫 Rooms Eliminated</h4>
+      <div>${roomHints.map(h => {
+        const room = ROOMS[h.index];
+        return `<span class="hint-chip room eliminated">${room.icon} ${room.name} <span class="hint-from">via ${h.shownBy}</span></span>`;
+      }).join('')}</div>
+    </div>`;
+  }
+
+  // Show what's still unknown
+  const knownPersons = new Set(personHints.map(h => h.index));
+  const knownItems = new Set(itemHints.map(h => h.index));
+  const knownRooms = new Set(roomHints.map(h => h.index));
+  // Also include cards the player holds
+  const p = players[getActiveHumanIndex()];
+  if (p) {
+    p.cards.forEach(card => {
+      if (card.type === 'character') knownPersons.add(card.index);
+      else if (card.type === 'item') knownItems.add(card.index);
+      else if (card.type === 'room') knownRooms.add(card.index);
+    });
+  }
+
+  const unknownPersons = CHARACTERS.filter((_, i) => !knownPersons.has(i));
+  const unknownItems = ITEMS.filter((_, i) => !knownItems.has(i));
+  const unknownRooms = ROOMS.filter((_, i) => !knownRooms.has(i));
+
+  if (unknownPersons.length > 0 || unknownItems.length > 0 || unknownRooms.length > 0) {
+    html += `<div class="hints-category" style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.08)">
+      <h4 style="color:var(--gold)">🔍 Still Unknown</h4>`;
+    if (unknownPersons.length > 0) {
+      html += `<div style="margin-bottom:4px">${unknownPersons.map(c =>
+        `<span class="hint-chip person">${c.icon} ${c.name}</span>`
+      ).join('')}</div>`;
+    }
+    if (unknownItems.length > 0) {
+      html += `<div style="margin-bottom:4px">${unknownItems.map(item =>
+        `<span class="hint-chip item">${item.icon} ${item.name}</span>`
+      ).join('')}</div>`;
+    }
+    if (unknownRooms.length > 0) {
+      html += `<div>${unknownRooms.map(room =>
+        `<span class="hint-chip room">${room.icon} ${room.name}</span>`
+      ).join('')}</div>`;
+    }
+    html += `</div>`;
+  }
+
+  container.innerHTML = html;
+}
+
+function updateTurnUI() {
+  if (gameOver) return;
+  const p = players[currentPlayerIndex];
+  const c = CHARACTERS[p.characterIndex];
+  document.getElementById('turn-text').textContent = `Turn ${turnNumber}`;
+  document.getElementById('current-player-name').textContent = p.name;
+  document.getElementById('current-player-name').style.background = c.color;
+
+  const isHumanTurn = !p.isAI && !eliminatedPlayers.has(currentPlayerIndex);
+  const diceEl = document.getElementById('dice-icon');
+  const resultEl = document.getElementById('dice-result');
+  const diceArea = document.getElementById('dice-area');
+
+  // Show dice area only on human turns
+  diceArea.style.display = isHumanTurn ? 'inline-flex' : 'none';
+
+  // Dice clickable state
+  if (isHumanTurn && !hasMovedThisTurn && diceRoll === 0 && !isRolling) {
+    diceEl.classList.remove('disabled');
+    diceEl.textContent = '🎲';
+    resultEl.textContent = 'Click to roll!';
+  } else if (!isRolling) {
+    diceEl.classList.add('disabled');
+    if (diceRoll > 0) {
+      resultEl.textContent = `Rolled ${diceRoll} — move!`;
+    } else if (hasMovedThisTurn) {
+      resultEl.textContent = '';
+    }
+  }
+
+  document.getElementById('end-turn-btn').style.display = isHumanTurn && (hasMovedThisTurn || hasSuggestedThisTurn) ? '' : 'none';
+  const currentRoomIdx = isHumanTurn ? getPlayerRoom(players[currentPlayerIndex]) : null;
+  const inRegularRoom = currentRoomIdx !== null && currentRoomIdx !== HOMEROOM_INDEX;
+  document.getElementById('suggest-btn').disabled = !isHumanTurn || !hasMovedThisTurn || hasSuggestedThisTurn || !inRegularRoom;
+  const inHomeroom = isHumanTurn && getPlayerRoom(players[currentPlayerIndex]) === HOMEROOM_INDEX;
+  document.getElementById('accuse-btn').disabled = !isHumanTurn || !inHomeroom;
+}
+
+// ═══════════════════════════════════════════════
+// Game Log
+// ═══════════════════════════════════════════════
+function addLog(msg, type = '') {
+  const log = document.getElementById('game-log');
+  const div = document.createElement('div');
+  div.className = `log-entry ${type}`;
+  div.innerHTML = msg;
+  log.prepend(div);
+}
+
+function clearLog() {
+  document.getElementById('game-log').innerHTML = '';
+}
+
+// ═══════════════════════════════════════════════
+// Turn Flow
+// ═══════════════════════════════════════════════
+function rollDice() {
+  if (gameOver || isRolling || diceRoll > 0 || hasMovedThisTurn) return;
+  const diceEl = document.getElementById('dice-icon');
+  const resultEl = document.getElementById('dice-result');
+
+  isRolling = true;
+  diceEl.classList.add('rolling');
+  resultEl.textContent = 'Rolling...';
+  hasMovedThisTurn = false;
+  hasSuggestedThisTurn = false;
+
+  // Animate dice faces for 3 seconds
+  const startTime = Date.now();
+  const duration = 3000;
+  let flipInterval;
+
+  flipInterval = setInterval(() => {
+    const elapsed = Date.now() - startTime;
+    // Slow down the flipping as we approach the end
+    const randomFace = Math.floor(Math.random() * 6);
+    diceEl.textContent = DICE_FACES[randomFace];
+
+    if (elapsed >= duration) {
+      clearInterval(flipInterval);
+      // Final result
+      diceRoll = Math.floor(Math.random() * 6) + 1;
+      diceEl.textContent = DICE_FACES[diceRoll - 1];
+      diceEl.classList.remove('rolling');
+      resultEl.textContent = `You rolled ${diceRoll}!`;
+      isRolling = false;
+      addLog(`${players[currentPlayerIndex].name} rolled a <strong>${diceRoll}</strong>!`);
+      renderBoard();
+      updateTurnUI();
+    }
+  }, 100);
+}
+
+function showHandover() {
+  const p = players[currentPlayerIndex];
+  const c = CHARACTERS[p.characterIndex];
+  document.getElementById('handover-icon').textContent = c.icon;
+  document.getElementById('handover-name').textContent = `${p.name}'s Turn`;
+  document.getElementById('handover-name').style.color = c.color;
+  document.getElementById('handover-overlay').classList.add('active');
+}
+
+function confirmHandover() {
+  document.getElementById('handover-overlay').classList.remove('active');
+  // Clear log so previous player's revealed cards aren't visible
+  clearLog();
+  addLog(`${players[currentPlayerIndex].name}'s turn begins!`, 'system');
+  renderBoard();
+  renderNotebook();
+  renderYourCards();
+  renderHints();
+  updateTurnUI();
+}
+
+function clickCell(row, col) {
+  if (gameOver || isRolling) return;
+  const p = players[currentPlayerIndex];
+  if (p.isAI || hasMovedThisTurn || diceRoll === 0) return;
+  if (!canMoveToCell(p.pos, row, col, diceRoll)) return;
+
+  const currentRoom = getPlayerRoom(p);
+  const targetRoom = getRoomAt(row, col);
+  const usedPassage = currentRoom !== null && targetRoom !== null && SECRET_PASSAGES[currentRoom] === targetRoom;
+
+  p.pos = { row, col };
+  hasMovedThisTurn = true;
+  diceRoll = 0;
+
+  const targetName = targetRoom === HOMEROOM_INDEX ? HOMEROOM.name : (targetRoom !== null ? ROOMS[targetRoom].name : null);
+  if (usedPassage) {
+    addLog(`${p.name} used the <strong>secret passage</strong> to the <strong>${targetName}</strong>!`, 'system');
+  } else if (targetRoom !== null) {
+    addLog(`${p.name} moved to the <strong>${targetName}</strong>.`);
+  } else {
+    addLog(`${p.name} moved into the <strong>hallway</strong>.`);
+  }
+  document.getElementById('dice-result').textContent = '';
+  renderBoard();
+  updateTurnUI();
+}
+
+function endTurn() {
+  if (gameOver) return;
+  diceRoll = 0;
+  hasMovedThisTurn = false;
+  hasSuggestedThisTurn = false;
+  document.getElementById('dice-icon').textContent = '🎲';
+  document.getElementById('dice-result').textContent = '';
+  advanceTurn();
+}
+
+function advanceTurn() {
+  if (gameOver) return;
+  // Find next non-eliminated player
+  let next = (currentPlayerIndex + 1) % players.length;
+  let safety = 0;
+  while (eliminatedPlayers.has(next) && safety < players.length) {
+    next = (next + 1) % players.length;
+    safety++;
+  }
+
+  // Check if only one player remains
+  const activePlayers = players.filter((_, i) => !eliminatedPlayers.has(i));
+  if (activePlayers.length <= 1) {
+    if (activePlayers.length === 1) {
+      const winner = players.indexOf(activePlayers[0]);
+      showGameResult(true, winner);
+    }
+    return;
+  }
+
+  if (next <= currentPlayerIndex) turnNumber++;
+  currentPlayerIndex = next;
+  diceRoll = 0;
+  hasMovedThisTurn = false;
+  hasSuggestedThisTurn = false;
+
+  if (players[currentPlayerIndex].isAI) {
+    renderBoard();
+    updateTurnUI();
+    setTimeout(doAITurn, 1000);
+  } else if (gameMode === 'multi') {
+    // Show handover screen in multiplayer
+    showHandover();
+  } else {
+    renderBoard();
+    updateTurnUI();
+  }
+}
+
+// ═══════════════════════════════════════════════
+// Suggestions
+// ═══════════════════════════════════════════════
+function openSuggestion() {
+  if (gameOver) return;
+  const p = players[currentPlayerIndex];
+  const currentRoom = getPlayerRoom(p);
+  if (currentRoom === null || currentRoom === HOMEROOM_INDEX) return; // Can't suggest from hallway or Homeroom
+  const roomName = ROOMS[currentRoom].name;
+
+  openModal(`
+    <h2>Make a Suggestion</h2>
+    <p style="text-align:center;margin-bottom:15px;color:#aaa">
+      "I think the item was found in the <strong>${roomName}</strong> by..."
+    </p>
+    <label style="display:block;margin-bottom:5px;color:#999;font-size:0.85rem">Who found it?</label>
+    <select class="modal-select" id="suggest-char">
+      ${CHARACTERS.map((c, i) => `<option value="${i}">${c.icon} ${c.name}</option>`).join('')}
+    </select>
+    <label style="display:block;margin-bottom:5px;color:#999;font-size:0.85rem">What was lost?</label>
+    <select class="modal-select" id="suggest-item">
+      ${ITEMS.map((item, i) => `<option value="${i}">${item.icon} ${item.name}</option>`).join('')}
+    </select>
+    <div class="modal-buttons">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" onclick="submitSuggestion()">Suggest!</button>
+    </div>
+  `);
+}
+
+function submitSuggestion() {
+  const charIdx = parseInt(document.getElementById('suggest-char').value);
+  const itemIdx = parseInt(document.getElementById('suggest-item').value);
+  const p = players[currentPlayerIndex];
+  closeModal();
+  processSuggestion(currentPlayerIndex, charIdx, itemIdx, getPlayerRoom(p));
+}
+
+function processSuggestion(suggestingPlayer, charIdx, itemIdx, roomIdx) {
+  const sp = players[suggestingPlayer];
+  addLog(`<strong>${sp.name}</strong> suggests: ${CHARACTERS[charIdx].icon} ${CHARACTERS[charIdx].name} found the ${ITEMS[itemIdx].icon} ${ITEMS[itemIdx].name} in the ${ROOMS[roomIdx].icon} ${ROOMS[roomIdx].name}`, 'system');
+  hasSuggestedThisTurn = true;
+
+  // Go around asking players to disprove
+  let disproved = false;
+  for (let offset = 1; offset < players.length; offset++) {
+    const pi = (suggestingPlayer + offset) % players.length;
+    if (eliminatedPlayers.has(pi)) continue;
+    const other = players[pi];
+    const matchingCards = other.cards.filter(c =>
+      (c.type === 'character' && c.index === charIdx) ||
+      (c.type === 'item' && c.index === itemIdx) ||
+      (c.type === 'room' && c.index === roomIdx)
+    );
+
+    if (matchingCards.length > 0) {
+      // Pick a random matching card to show
+      const shown = matchingCards[Math.floor(Math.random() * matchingCards.length)];
+      const cardData = shown.type === 'character' ? CHARACTERS[shown.index] :
+                       shown.type === 'item' ? ITEMS[shown.index] : ROOMS[shown.index];
+
+      if (sp.isAI) {
+        // AI sees the card (update its notebook)
+        const cat = shown.type === 'character' ? 'characters' : shown.type === 'item' ? 'items' : 'rooms';
+        sp.notebook[cat][shown.index] = 1;
+        addLog(`${other.name} showed a card to ${sp.name} (secret).`);
+      } else {
+        // Show the human player the card
+        addLog(`${other.name} showed you: <strong>${cardData.icon || ''} ${cardData.name}</strong>`, 'reveal');
+        // Auto-mark in notebook
+        const cat = shown.type === 'character' ? 'characters' : shown.type === 'item' ? 'items' : 'rooms';
+        sp.notebook[cat][shown.index] = 1;
+        // Record hint on the player who made the suggestion (avoid duplicates)
+        if (!sp.hints.some(h => h.type === shown.type && h.index === shown.index)) {
+          sp.hints.push({ type: shown.type, index: shown.index, shownBy: other.name });
+        }
+        renderNotebook();
+        renderHints();
+
+        showRevealModal(other.name, cardData);
+      }
+      disproved = true;
+      break;
+    }
+  }
+
+  if (!disproved) {
+    addLog(`Nobody could disprove the suggestion!`, 'system');
+    if (sp.isAI) {
+      // AI notes that nobody disproved - these might be the solution
+      const cat1 = 'characters', cat2 = 'items', cat3 = 'rooms';
+      if (!sp.notebook[cat1][charIdx]) sp.notebook[cat1][charIdx] = 2;
+      if (!sp.notebook[cat2][itemIdx]) sp.notebook[cat2][itemIdx] = 2;
+      if (!sp.notebook[cat3][roomIdx]) sp.notebook[cat3][roomIdx] = 2;
+    }
+  }
+
+  updateTurnUI();
+}
+
+function showRevealModal(playerName, cardData) {
+  openModal(`
+    <h2>Card Revealed!</h2>
+    <p style="text-align:center;color:#aaa">${playerName} shows you:</p>
+    <div class="reveal-card">
+      <div class="reveal-icon">${cardData.icon || '🃏'}</div>
+      <div class="reveal-text">${cardData.name}</div>
+    </div>
+    <p style="text-align:center;font-size:0.85rem;color:#888">This card has been marked in your notebook.</p>
+    <button class="btn-primary" onclick="closeModal()">OK</button>
+  `);
+}
+
+// ═══════════════════════════════════════════════
+// Accusations
+// ═══════════════════════════════════════════════
+function openAccusation() {
+  if (gameOver) return;
+  const p = players[currentPlayerIndex];
+  if (getPlayerRoom(p) !== HOMEROOM_INDEX) return;
+
+  openModal(`
+    <h2>Make an Accusation!</h2>
+    <p style="text-align:center;margin-bottom:15px;color:#c62828;font-size:0.9rem">
+      Warning: If you're wrong, you're out of the game!
+    </p>
+    <p style="text-align:center;margin-bottom:15px;color:#aaa;font-size:0.9rem">
+      You are in <strong>🏫 Homeroom</strong> — state your accusation!
+    </p>
+    <label style="display:block;margin-bottom:5px;color:#999;font-size:0.85rem">Who found it?</label>
+    <select class="modal-select" id="accuse-char">
+      ${CHARACTERS.map((c, i) => `<option value="${i}">${c.icon} ${c.name}</option>`).join('')}
+    </select>
+    <label style="display:block;margin-bottom:5px;color:#999;font-size:0.85rem">What was lost?</label>
+    <select class="modal-select" id="accuse-item">
+      ${ITEMS.map((item, i) => `<option value="${i}">${item.icon} ${item.name}</option>`).join('')}
+    </select>
+    <label style="display:block;margin-bottom:5px;color:#999;font-size:0.85rem">Where was it found?</label>
+    <select class="modal-select" id="accuse-room">
+      ${ROOMS.map((r, i) => `<option value="${i}">${r.icon} ${r.name}</option>`).join('')}
+    </select>
+    <div class="modal-buttons">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" style="background:linear-gradient(135deg,#c62828,#e91e63)" onclick="submitAccusation()">Accuse!</button>
+    </div>
+  `);
+}
+
+function submitAccusation() {
+  const charIdx = parseInt(document.getElementById('accuse-char').value);
+  const itemIdx = parseInt(document.getElementById('accuse-item').value);
+  const roomIdx = parseInt(document.getElementById('accuse-room').value);
+  closeModal();
+  processAccusation(currentPlayerIndex, charIdx, itemIdx, roomIdx);
+}
+
+function processAccusation(playerIdx, charIdx, itemIdx, roomIdx) {
+  const p = players[playerIdx];
+  const correct = charIdx === solution.character && itemIdx === solution.item && roomIdx === solution.room;
+
+  addLog(`<strong>${p.name}</strong> accuses: ${CHARACTERS[charIdx].icon} ${CHARACTERS[charIdx].name} found the ${ITEMS[itemIdx].icon} ${ITEMS[itemIdx].name} in the ${ROOMS[roomIdx].icon} ${ROOMS[roomIdx].name}`, 'accusation');
+
+  if (correct) {
+    addLog(`${p.name} solved the mystery!`, 'system');
+    showGameResult(true, playerIdx);
+  } else {
+    addLog(`${p.name}'s accusation was WRONG! They are out!`, 'accusation');
+    eliminatedPlayers.add(playerIdx);
+
+    if (!p.isAI) {
+      showGameResult(false, playerIdx);
+    } else {
+      // Check if human is still in
+      const humanIdx = getActiveHumanIndex();
+      const activePlayers = players.filter((_, i) => !eliminatedPlayers.has(i));
+      if (activePlayers.length <= 1) {
+        if (activePlayers.length === 1) {
+          const winnerIdx = players.indexOf(activePlayers[0]);
+          showGameResult(true, winnerIdx);
+        }
+        return;
+      }
+      renderBoard();
+      advanceTurn();
+    }
+  }
+}
+
+function showGameResult(won, playerIdx) {
+  gameOver = true;
+  const p = players[playerIdx];
+  const isHuman = !p.isAI;
+
+  let title, icon;
+  if (won && isHuman) { title = 'You Solved It!'; icon = '🎉'; }
+  else if (won && !isHuman) { title = `${p.name} Wins!`; icon = '🤖'; }
+  else { title = 'Case Closed...'; icon = '😔'; }
+
+  openModal(`
+    <div class="result-modal">
+      <div class="result-icon">${icon}</div>
+      <h2>${title}</h2>
+      <div class="solution-reveal">
+        <p style="color:#aaa;margin-bottom:10px;font-size:0.9rem">The answer was:</p>
+        <div class="sol-line">${CHARACTERS[solution.character].icon} <strong>${CHARACTERS[solution.character].name}</strong> found the item</div>
+        <div class="sol-line">${ITEMS[solution.item].icon} It was a <strong>${ITEMS[solution.item].name}</strong></div>
+        <div class="sol-line">${ROOMS[solution.room].icon} Found in the <strong>${ROOMS[solution.room].name}</strong></div>
+      </div>
+      <button class="btn-primary" onclick="closeModal();backToTitle()">Play Again</button>
+    </div>
+  `);
+}
+
+// ═══════════════════════════════════════════════
+// AI Logic
+// ═══════════════════════════════════════════════
+function doAITurn() {
+  if (gameOver) return;
+  const p = players[currentPlayerIndex];
+  if (!p.isAI || eliminatedPlayers.has(currentPlayerIndex)) {
+    advanceTurn();
+    return;
+  }
+
+  // Roll
+  diceRoll = Math.floor(Math.random() * 6) + 1;
+  addLog(`${p.name} rolled a <strong>${diceRoll}</strong>.`);
+
+  // AI tries to move to a room (prefers rooms, avoids hallways)
+  const reachable = getReachableCells(p.pos, diceRoll);
+  const possibleRooms = [];
+  for (const [key] of reachable) {
+    const [rr, cc] = key.split(',').map(Number);
+    const ri = getRoomAt(rr, cc);
+    if (ri !== null) possibleRooms.push({ ri, row: rr, col: cc });
+  }
+
+  // Check if AI is ready to accuse
+  const suspectChar = findSuspect(p, 'characters', CHARACTERS.length);
+  const suspectItem = findSuspect(p, 'items', ITEMS.length);
+  const suspectRoom = findSuspect(p, 'rooms', ROOMS.length);
+  const aiWantsToAccuse = suspectChar !== -1 && suspectItem !== -1 && suspectRoom !== -1;
+
+  let movedToRoom = false;
+  if (possibleRooms.length > 0) {
+    let target;
+    if (aiWantsToAccuse) {
+      // Head to Homeroom if possible
+      const homeroomOption = possibleRooms.find(x => x.ri === HOMEROOM_INDEX);
+      if (homeroomOption) {
+        target = homeroomOption;
+      }
+    }
+    if (!target) {
+      // Prefer regular rooms not eliminated in notebook (skip Homeroom unless heading there)
+      const regularRooms = possibleRooms.filter(x => x.ri !== HOMEROOM_INDEX);
+      const unknownRooms = regularRooms.filter(x => !p.notebook.rooms[x.ri] || p.notebook.rooms[x.ri] === 2);
+      if (unknownRooms.length > 0) {
+        target = unknownRooms[Math.floor(Math.random() * unknownRooms.length)];
+      } else if (regularRooms.length > 0) {
+        target = regularRooms[Math.floor(Math.random() * regularRooms.length)];
+      } else {
+        target = possibleRooms[Math.floor(Math.random() * possibleRooms.length)];
+      }
+    }
+
+    const currentRoom = getPlayerRoom(p);
+    const usedPassage = currentRoom !== null && SECRET_PASSAGES[currentRoom] === target.ri;
+    p.pos = { row: target.row, col: target.col };
+    movedToRoom = true;
+    const roomData = target.ri === HOMEROOM_INDEX ? HOMEROOM : ROOMS[target.ri];
+    if (usedPassage) {
+      addLog(`${p.name} used the <strong>secret passage</strong> to the <strong>${roomData.name}</strong>!`, 'system');
+    } else {
+      addLog(`${p.name} moved to the <strong>${roomData.name}</strong>.`);
+    }
+  } else if (reachable.size > 0) {
+    // No rooms reachable, move to a hallway cell
+    const cells = [...reachable.keys()];
+    const pick = cells[Math.floor(Math.random() * cells.length)];
+    const [rr, cc] = pick.split(',').map(Number);
+    p.pos = { row: rr, col: cc };
+    addLog(`${p.name} moved into the <strong>hallway</strong>.`);
+  }
+
+  renderBoard();
+
+  // Accuse only if in Homeroom and confident
+  if (aiWantsToAccuse && getPlayerRoom(p) === HOMEROOM_INDEX) {
+    setTimeout(() => {
+      processAccusation(currentPlayerIndex, suspectChar, suspectItem, suspectRoom);
+    }, 800);
+    return;
+  }
+
+  // Make a suggestion only if in a regular room (not Homeroom, not hallway)
+  const aiRoom = getPlayerRoom(p);
+  if (!movedToRoom || aiRoom === null || aiRoom === HOMEROOM_INDEX) {
+    setTimeout(() => {
+      if (!gameOver) advanceTurn();
+    }, 600);
+    return;
+  }
+
+  // Make a suggestion in current room
+  setTimeout(() => {
+    // Pick character and item to ask about (prefer unknowns)
+    const charGuess = pickUnknown(p, 'characters', CHARACTERS.length);
+    const itemGuess = pickUnknown(p, 'items', ITEMS.length);
+    processSuggestion(currentPlayerIndex, charGuess, itemGuess, aiRoom);
+
+    setTimeout(() => {
+      if (!gameOver) advanceTurn();
+    }, 600);
+  }, 600);
+}
+
+function findSuspect(player, category, count) {
+  // Returns the index if exactly one item is not eliminated, otherwise -1
+  const unknowns = [];
+  for (let i = 0; i < count; i++) {
+    if (player.notebook[category][i] !== 1) {
+      unknowns.push(i);
+    }
+  }
+  if (unknowns.length === 1) return unknowns[0];
+  return -1;
+}
+
+function pickUnknown(player, category, count) {
+  // Pick a random non-eliminated index, preferring "maybe" (2)
+  const maybes = [];
+  const unknowns = [];
+  for (let i = 0; i < count; i++) {
+    const state = player.notebook[category][i] || 0;
+    if (state === 2) maybes.push(i);
+    else if (state !== 1) unknowns.push(i);
+  }
+  if (maybes.length > 0) return maybes[Math.floor(Math.random() * maybes.length)];
+  if (unknowns.length > 0) return unknowns[Math.floor(Math.random() * unknowns.length)];
+  return Math.floor(Math.random() * count);
+}
+
+// ═══════════════════════════════════════════════
+// Modal
+// ═══════════════════════════════════════════════
+function openModal(html) {
+  document.getElementById('modal-content').innerHTML = html;
+  document.getElementById('modal-overlay').classList.add('active');
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('active');
+}
+
+// Close modal on overlay click
+document.getElementById('modal-overlay').addEventListener('click', (e) => {
+  if (e.target === e.currentTarget) closeModal();
+});
+</script>
+</body>
+</html>
