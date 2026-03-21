@@ -615,6 +615,121 @@ body {
   font-size: 0.9rem;
 }
 
+/* ── Dealing Scene ── */
+.dealing-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s;
+}
+.dealing-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+.dealing-scene {
+  text-align: center;
+}
+.dealing-svg {
+  width: min(500px, 90vw);
+  height: auto;
+}
+.dealing-text {
+  font-size: 1.4rem;
+  color: var(--gold);
+  margin-top: 20px;
+  font-weight: bold;
+  animation: dealing-pulse 0.8s ease-in-out infinite alternate;
+}
+@keyframes dealing-pulse {
+  from { opacity: 0.6; }
+  to { opacity: 1; }
+}
+@keyframes deal-card-fly {
+  0% { opacity: 1; transform: translate(0, 0) rotate(0deg); }
+  100% { opacity: 0; }
+}
+
+/* ── Card Fan Overlay ── */
+.card-fan-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s;
+}
+.card-fan-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+.card-fan-overlay.slide-out .card-fan-hand {
+  transform: translateX(120vw);
+  transition: transform 0.6s ease-in;
+}
+.card-fan-hand {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  padding-bottom: 30px;
+  transition: transform 0.6s ease-out;
+}
+.card-fan-hand .fan-card {
+  width: 100px;
+  height: 150px;
+  background: linear-gradient(135deg, #fff 0%, #f0f0f0 100%);
+  border-radius: 10px;
+  border: 2px solid #ccc;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin: 0 -15px;
+  transform-origin: bottom center;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  transition: transform 0.5s ease-out;
+}
+.card-fan-hand .fan-card .fan-card-icon {
+  font-size: 2rem;
+  margin-bottom: 6px;
+}
+.card-fan-hand .fan-card .fan-card-name {
+  font-size: 0.65rem;
+  color: #333;
+  text-align: center;
+  font-weight: bold;
+  padding: 0 4px;
+}
+.card-fan-hand .fan-card .fan-card-type {
+  font-size: 0.5rem;
+  color: #888;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+.card-fan-hand .fan-card.type-character { border-color: var(--pink); background: linear-gradient(135deg, #fff0f8, #ffe0f0); }
+.card-fan-hand .fan-card.type-item { border-color: var(--blue); background: linear-gradient(135deg, #f0f8ff, #e0f0ff); }
+.card-fan-hand .fan-card.type-room { border-color: var(--green); background: linear-gradient(135deg, #f0fff0, #e0ffe0); }
+
+/* Cartoon hand */
+.card-fan-thumb {
+  position: absolute;
+  bottom: -10px;
+  font-size: 4rem;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
 /* ── Dice ── */
 .dice-container {
   display: inline-flex;
@@ -1090,6 +1205,44 @@ body {
   </div>
 </div>
 
+<!-- ══════ Dealing Scene ══════ -->
+<div class="dealing-overlay" id="dealing-overlay">
+  <div class="dealing-scene">
+    <div class="dealing-table">
+      <svg viewBox="0 0 500 350" xmlns="http://www.w3.org/2000/svg" class="dealing-svg">
+        <!-- Table -->
+        <ellipse cx="250" cy="220" rx="200" ry="80" fill="#8B5E3C"/>
+        <ellipse cx="250" cy="215" rx="200" ry="80" fill="#A0522D"/>
+        <ellipse cx="250" cy="210" rx="195" ry="75" fill="#B8733E"/>
+        <!-- Table shine -->
+        <ellipse cx="230" cy="200" rx="120" ry="40" fill="#C4854A" opacity="0.4"/>
+
+        <!-- Players around table - populated by JS -->
+        <g id="dealing-players"></g>
+
+        <!-- Cards in center -->
+        <g id="dealing-cards-center">
+          <rect x="230" y="190" width="40" height="55" rx="4" fill="#1a5276" stroke="#fff" stroke-width="1.5" transform="rotate(-8 250 217)"/>
+          <rect x="235" y="188" width="40" height="55" rx="4" fill="#1a5276" stroke="#fff" stroke-width="1.5" transform="rotate(3 255 215)"/>
+          <rect x="240" y="186" width="40" height="55" rx="4" fill="#1a5276" stroke="#fff" stroke-width="1.5" transform="rotate(12 260 213)"/>
+          <text x="255" y="218" text-anchor="middle" fill="#ffd700" font-size="16">?</text>
+        </g>
+
+        <!-- Flying cards - added by animation -->
+        <g id="dealing-flying-cards"></g>
+      </svg>
+    </div>
+    <div class="dealing-text" id="dealing-text">Dealing cards...</div>
+  </div>
+</div>
+
+<!-- ══════ Card Fan ══════ -->
+<div class="card-fan-overlay" id="card-fan-overlay">
+  <div class="card-fan-hand" id="card-fan-hand">
+    <div class="card-fan-thumb">🤚</div>
+  </div>
+</div>
+
 <!-- ══════ Turn Handover ══════ -->
 <div class="handover-overlay" id="handover-overlay">
   <div class="handover-icon" id="handover-icon"></div>
@@ -1187,6 +1340,7 @@ let diceRoll = 0;
 let hasMovedThisTurn = false;
 let hasSuggestedThisTurn = false;
 let eliminatedPlayers = new Set();
+let cardFanShown = new Set();
 let hintsReceived = []; // legacy global - now per-player via p.hints
 
 // Each player: { name, characterIndex, pos: {row,col}, cards[], notebook: { characters: {}, items: {}, rooms: {} }, isAI }
@@ -1255,6 +1409,14 @@ function buildSetupForm() {
       </div>`;
   } else {
     const currentCount = document.getElementById('player-count')?.value || '3';
+    // Preserve existing player names and character selections
+    const savedNames = {};
+    const savedChars = {};
+    for (let i = 0; i < 5; i++) {
+      const nameEl = document.getElementById(`p${i}-name`);
+      if (nameEl) savedNames[i] = nameEl.value;
+      savedChars[i] = selectedChars[i];
+    }
     html += `
       <div class="form-group">
         <label>Number of Players</label>
@@ -1267,16 +1429,19 @@ function buildSetupForm() {
       </div>`;
     const count = parseInt(currentCount);
     for (let p = 0; p < count; p++) {
+      const nameVal = savedNames.hasOwnProperty(p) ? savedNames[p] : `Player ${p + 1}`;
+      const charVal = savedChars.hasOwnProperty(p) ? savedChars[p] : p;
+      selectedChars[p] = charVal;
       html += `
         <div class="form-group">
           <label>Player ${p + 1} Name</label>
-          <input type="text" id="p${p}-name" placeholder="Player ${p + 1}" value="Player ${p + 1}">
+          <input type="text" id="p${p}-name" placeholder="Player ${p + 1}" value="${nameVal.replace(/"/g, '&quot;')}">
         </div>
         <div class="form-group">
           <label>Player ${p + 1} Character</label>
           <div class="character-select" id="char-select-${p}">
             ${CHARACTERS.map((c, i) => `
-              <div class="char-option ${i === p ? 'selected' : ''}" onclick="selectChar(${p}, ${i})">
+              <div class="char-option ${i === charVal ? 'selected' : ''}" onclick="selectChar(${p}, ${i})">
                 <div class="char-icon">${c.icon}</div>
                 <div class="char-name">${c.name}</div>
               </div>`).join('')}
@@ -1347,6 +1512,7 @@ function showRules() {
 function startGame() {
   players = [];
   eliminatedPlayers = new Set();
+  cardFanShown = new Set();
   hintsReceived = [];
   gameOver = false;
   turnNumber = 1;
@@ -1430,29 +1596,138 @@ function startGame() {
   showScreen('narrator-screen');
 }
 
-function dismissNarrator() {
-  showScreen('game-screen');
-  clearLog();
-  addLog(`Mrs Uy: "Good luck, detectives! Find the lost item!"`, 'system');
-  addLog(`${players.length} detectives are on the case!`, 'system');
+function showCardFan(playerIndex, callback) {
+  const p = players[playerIndex];
+  const hand = document.getElementById('card-fan-hand');
+  const overlay = document.getElementById('card-fan-overlay');
+  const totalCards = p.cards.length;
+  const spreadAngle = Math.min(totalCards * 12, 60);
 
-  if (players[currentPlayerIndex].isAI) {
-    renderBoard();
-    renderNotebook();
-    renderYourCards();
-    renderHints();
-    updateTurnUI();
-    setTimeout(doAITurn, 800);
-  } else if (gameMode === 'multi') {
-    // Show handover for the first human player
-    showHandover();
-  } else {
-    renderBoard();
-    renderNotebook();
-    renderYourCards();
-    renderHints();
-    updateTurnUI();
+  // Build card elements
+  let cardsHtml = '';
+  p.cards.forEach((card, i) => {
+    const data = card.type === 'character' ? CHARACTERS[card.index] :
+                 card.type === 'item' ? ITEMS[card.index] : ROOMS[card.index];
+    const angle = totalCards === 1 ? 0 : -spreadAngle / 2 + (spreadAngle / (totalCards - 1)) * i;
+    const yShift = Math.abs(angle) * 0.5;
+    cardsHtml += `<div class="fan-card type-${card.type}" style="transform: rotate(${angle}deg) translateY(-${yShift}px)">
+      <div class="fan-card-icon">${data.icon || ''}</div>
+      <div class="fan-card-name">${data.name}</div>
+      <div class="fan-card-type">${card.type}</div>
+    </div>`;
+  });
+  hand.innerHTML = cardsHtml + '<div class="card-fan-thumb">🤚</div>';
+
+  overlay.classList.remove('slide-out');
+  overlay.classList.add('active');
+
+  setTimeout(() => {
+    overlay.classList.add('slide-out');
+    setTimeout(() => {
+      overlay.classList.remove('active', 'slide-out');
+      if (callback) callback();
+    }, 700);
+  }, 4000);
+}
+
+function showDealingScene(callback) {
+  const overlay = document.getElementById('dealing-overlay');
+  const playersG = document.getElementById('dealing-players');
+  const flyingG = document.getElementById('dealing-flying-cards');
+
+  // Position players around the table
+  const positions = [
+    { x: 80, y: 140, anchor: 'middle' },   // left
+    { x: 420, y: 140, anchor: 'middle' },   // right
+    { x: 250, y: 80, anchor: 'middle' },    // top center
+    { x: 140, y: 100, anchor: 'middle' },   // top-left
+    { x: 360, y: 100, anchor: 'middle' },   // top-right
+  ];
+
+  let playersHtml = '';
+  players.forEach((p, i) => {
+    const pos = positions[i % positions.length];
+    const c = CHARACTERS[p.characterIndex];
+    playersHtml += `
+      <g transform="translate(${pos.x}, ${pos.y})">
+        <text x="0" y="0" text-anchor="${pos.anchor}" font-size="36">${c.icon}</text>
+        <text x="0" y="22" text-anchor="${pos.anchor}" font-size="10" fill="${c.color}" font-weight="bold">${p.name}</text>
+      </g>`;
+  });
+  playersG.innerHTML = playersHtml;
+  flyingG.innerHTML = '';
+
+  overlay.classList.add('active');
+
+  // Animate cards flying to each player
+  const totalCards = players.reduce((sum, p) => sum + p.cards.length, 0);
+  let cardIndex = 0;
+
+  function dealNextCard() {
+    if (cardIndex >= totalCards) {
+      document.getElementById('dealing-text').textContent = 'Let the investigation begin!';
+      setTimeout(() => {
+        overlay.classList.remove('active');
+        if (callback) callback();
+      }, 800);
+      return;
+    }
+
+    const playerIdx = cardIndex % players.length;
+    const pos = positions[playerIdx % positions.length];
+    const card = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    card.setAttribute('x', '245');
+    card.setAttribute('y', '195');
+    card.setAttribute('width', '22');
+    card.setAttribute('height', '30');
+    card.setAttribute('rx', '3');
+    card.setAttribute('fill', '#1a5276');
+    card.setAttribute('stroke', '#ffd700');
+    card.setAttribute('stroke-width', '1');
+
+    const dx = pos.x - 250;
+    const dy = pos.y - 210;
+    card.style.animation = `deal-card-fly 0.3s ease-out forwards`;
+    card.style.transformOrigin = 'center center';
+    card.animate([
+      { transform: 'translate(0, 0) rotate(0deg)', opacity: 1 },
+      { transform: `translate(${dx}px, ${dy}px) rotate(${(Math.random() - 0.5) * 40}deg)`, opacity: 0.3 }
+    ], { duration: 300, fill: 'forwards', easing: 'ease-out' });
+
+    flyingG.appendChild(card);
+    cardIndex++;
+    setTimeout(dealNextCard, 120);
   }
+
+  setTimeout(dealNextCard, 400);
+}
+
+function dismissNarrator() {
+  showDealingScene(() => {
+    showScreen('game-screen');
+    clearLog();
+    addLog(`Mrs Uy: "Good luck, detectives! Find the lost item!"`, 'system');
+    addLog(`${players.length} detectives are on the case!`, 'system');
+
+    if (players[currentPlayerIndex].isAI) {
+      renderBoard();
+      renderNotebook();
+      renderYourCards();
+      renderHints();
+      updateTurnUI();
+      setTimeout(doAITurn, 800);
+    } else if (gameMode === 'multi') {
+      showHandover();
+    } else {
+      renderBoard();
+      renderNotebook();
+      renderYourCards();
+      renderHints();
+      updateTurnUI();
+      cardFanShown.add(currentPlayerIndex);
+      showCardFan(currentPlayerIndex);
+    }
+  });
 }
 
 const MRS_UY_TIPS = [
@@ -1567,6 +1842,10 @@ function renderBoard() {
         `<div class="player-token" style="background:${CHARACTERS[p.characterIndex].color}" title="${p.name}">${p.name[0]}</div>`
       ).join('');
 
+      // Highlight current cell so player can choose to stay
+      const isCurrentCell = showReachable && players[currentPlayerIndex].pos.row === r && players[currentPlayerIndex].pos.col === c;
+      const cellHighlight = isReachable || isCurrentCell;
+
       if (roomIdx !== null) {
         const isHomeroom = roomIdx === HOMEROOM_INDEX;
         const room = isHomeroom ? HOMEROOM : ROOMS[roomIdx];
@@ -1574,7 +1853,7 @@ function renderBoard() {
         const passageTarget = hasPassage ? ROOMS[SECRET_PASSAGES[roomIdx]].name : '';
 
         html += `
-          <div class="board-cell room-cell ${isHomeroom ? 'homeroom-cell' : ''} ${isReachable ? 'highlight' : ''}" onclick="clickCell(${r},${c})">
+          <div class="board-cell room-cell ${isHomeroom ? 'homeroom-cell' : ''} ${cellHighlight ? 'highlight' : ''}" onclick="clickCell(${r},${c})">
             ${hasPassage ? `<span class="secret-passage" title="Secret passage to ${passageTarget}">🚪</span>` : ''}
             <div class="room-icon">${room.icon}</div>
             <div class="room-name">${room.name}</div>
@@ -1583,9 +1862,9 @@ function renderBoard() {
           </div>`;
       } else {
         // Hallway cell
-        html += `<div class="board-cell hallway-cell ${isReachable ? 'hall-reachable' : ''}" onclick="clickCell(${r},${c})">
+        html += `<div class="board-cell hallway-cell ${cellHighlight ? 'hall-reachable' : ''}" onclick="clickCell(${r},${c})">
           ${tokens ? `<div class="room-players">${tokens}</div>` : ''}
-          <span class="hall-label">${isReachable ? '👣' : 'Hall'}</span>
+          <span class="hall-label">${cellHighlight ? '👣' : 'Hall'}</span>
         </div>`;
       }
     }
@@ -1870,29 +2149,41 @@ function confirmHandover() {
   renderYourCards();
   renderHints();
   updateTurnUI();
+  // Show card fan on each human player's first turn
+  if (!cardFanShown.has(currentPlayerIndex) && !players[currentPlayerIndex].isAI) {
+    cardFanShown.add(currentPlayerIndex);
+    showCardFan(currentPlayerIndex);
+  }
 }
 
 function clickCell(row, col) {
   if (gameOver || isRolling) return;
   const p = players[currentPlayerIndex];
   if (p.isAI || hasMovedThisTurn || diceRoll === 0) return;
-  if (!canMoveToCell(p.pos, row, col, diceRoll)) return;
+
+  // Allow staying in current cell
+  const isStaying = p.pos.row === row && p.pos.col === col;
+  if (!isStaying && !canMoveToCell(p.pos, row, col, diceRoll)) return;
 
   const currentRoom = getPlayerRoom(p);
   const targetRoom = getRoomAt(row, col);
-  const usedPassage = currentRoom !== null && targetRoom !== null && SECRET_PASSAGES[currentRoom] === targetRoom;
+  const usedPassage = !isStaying && currentRoom !== null && targetRoom !== null && SECRET_PASSAGES[currentRoom] === targetRoom;
 
   p.pos = { row, col };
   hasMovedThisTurn = true;
   diceRoll = 0;
 
-  const targetName = targetRoom === HOMEROOM_INDEX ? HOMEROOM.name : (targetRoom !== null ? ROOMS[targetRoom].name : null);
-  if (usedPassage) {
-    addLog(`${p.name} used the <strong>secret passage</strong> to the <strong>${targetName}</strong>!`, 'system');
-  } else if (targetRoom !== null) {
-    addLog(`${p.name} moved to the <strong>${targetName}</strong>.`);
+  if (isStaying) {
+    addLog(`${p.name} chose to <strong>stay</strong>.`);
   } else {
-    addLog(`${p.name} moved into the <strong>hallway</strong>.`);
+    const targetName = targetRoom === HOMEROOM_INDEX ? HOMEROOM.name : (targetRoom !== null ? ROOMS[targetRoom].name : null);
+    if (usedPassage) {
+      addLog(`${p.name} used the <strong>secret passage</strong> to the <strong>${targetName}</strong>!`, 'system');
+    } else if (targetRoom !== null) {
+      addLog(`${p.name} moved to the <strong>${targetName}</strong>.`);
+    } else {
+      addLog(`${p.name} moved into the <strong>hallway</strong>.`);
+    }
   }
   document.getElementById('dice-result').textContent = '';
   renderBoard();
@@ -2144,7 +2435,7 @@ function showGameResult(won, playerIdx) {
   let title, icon;
   if (won && isHuman) { title = 'You Solved It!'; icon = '🎉'; }
   else if (won && !isHuman) { title = `${p.name} Wins!`; icon = '🤖'; }
-  else { title = 'Case Closed...'; icon = '😔'; }
+  else { title = 'Better luck next time. Your accusation is not correct.'; icon = '😔'; }
 
   openModal(`
     <div class="result-modal">
