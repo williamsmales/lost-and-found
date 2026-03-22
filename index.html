@@ -1131,15 +1131,83 @@ body {
 .card-chip.room { background: rgba(76,175,80,0.2); color: var(--green); }
 
 /* Responsive */
+/* ── Mobile Tabs ── */
+.mobile-tabs {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: var(--bg2);
+  border-top: 2px solid rgba(255,215,0,0.3);
+  padding: 0;
+  justify-content: space-around;
+}
+
+.mobile-tab {
+  flex: 1;
+  padding: 10px 4px;
+  text-align: center;
+  font-size: 0.7rem;
+  color: #888;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mobile-tab .tab-icon {
+  font-size: 1.3rem;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.mobile-tab.active {
+  color: var(--gold);
+  background: rgba(255,215,0,0.08);
+}
+
 @media (max-width: 900px) {
   .game-layout {
     grid-template-columns: 1fr;
-    grid-template-rows: 60px auto auto auto;
+    grid-template-rows: 50px 1fr;
+    height: calc(100vh - 56px);
   }
-  .left-panel { display: none; }
-  .right-panel { max-height: 250px; }
-  .board { max-width: 400px; }
+  .top-bar { padding: 0 10px; }
+  .top-bar h1 { font-size: 1rem; }
+  .turn-info { gap: 6px; }
+  .turn-badge { font-size: 0.65rem; padding: 3px 8px; }
+  .dice-icon { width: 34px; height: 34px; font-size: 1.2rem; }
+  .dice-result { font-size: 0.7rem; min-width: 50px; }
+  .dice-btn { font-size: 0.7rem; padding: 4px 8px; }
+
+  .left-panel, .right-panel, .board-area {
+    display: none;
+    overflow-y: auto;
+  }
+  .left-panel.mobile-active,
+  .right-panel.mobile-active,
+  .board-area.mobile-active {
+    display: block;
+  }
+  .left-panel.mobile-active {
+    border-right: none;
+    padding-bottom: 60px;
+  }
+  .right-panel.mobile-active {
+    border-left: none;
+    max-height: none;
+    padding-bottom: 60px;
+  }
+  .board-area.mobile-active {
+    display: flex;
+    padding-bottom: 60px;
+  }
+  .board { max-width: 100%; }
+  .mobile-tabs { display: flex; }
   #title-screen h1 { font-size: 2.5rem; }
+  #password-screen h1 { font-size: 2rem; }
 }
 </style>
 </head>
@@ -1289,6 +1357,19 @@ body {
       </div>
     </div>
   </div>
+</div>
+
+<!-- ══════ Mobile Tabs ══════ -->
+<div class="mobile-tabs" id="mobile-tabs">
+  <button class="mobile-tab active" onclick="switchMobileTab('board')" id="tab-board">
+    <span class="tab-icon">🗺️</span>Board
+  </button>
+  <button class="mobile-tab" onclick="switchMobileTab('notebook')" id="tab-notebook">
+    <span class="tab-icon">📓</span>Notebook
+  </button>
+  <button class="mobile-tab" onclick="switchMobileTab('actions')" id="tab-actions">
+    <span class="tab-icon">⚡</span>Actions
+  </button>
 </div>
 
 <!-- ══════ Dealing Scene ══════ -->
@@ -1453,16 +1534,42 @@ let hintsReceived = []; // legacy global - now per-player via p.hints
 // ═══════════════════════════════════════════════
 // Screen Management
 // ═══════════════════════════════════════════════
+function switchMobileTab(tab) {
+  document.querySelectorAll('.mobile-tab').forEach(t => t.classList.remove('active'));
+  const boardArea = document.querySelector('.board-area');
+  const leftPanel = document.querySelector('.left-panel');
+  const rightPanel = document.querySelector('.right-panel');
+  boardArea.classList.remove('mobile-active');
+  leftPanel.classList.remove('mobile-active');
+  rightPanel.classList.remove('mobile-active');
+  if (tab === 'board') {
+    boardArea.classList.add('mobile-active');
+    document.getElementById('tab-board').classList.add('active');
+  } else if (tab === 'notebook') {
+    leftPanel.classList.add('mobile-active');
+    document.getElementById('tab-notebook').classList.add('active');
+  } else if (tab === 'actions') {
+    rightPanel.classList.add('mobile-active');
+    document.getElementById('tab-actions').classList.add('active');
+  }
+}
+
 function showScreen(id) {
   ['password-screen', 'title-screen', 'setup-screen', 'game-screen', 'narrator-screen'].forEach(s => {
     document.getElementById(s).style.display = 'none';
   });
   document.getElementById('narrator-mini').style.display = 'none';
   document.getElementById('narrator-tooltip').style.display = 'none';
+  document.getElementById('mobile-tabs').style.display = 'none';
   const el = document.getElementById(id);
   if (id === 'game-screen') {
     el.style.display = 'block';
     document.getElementById('narrator-mini').style.display = 'flex';
+    // Show mobile tabs and default to board on mobile
+    if (window.innerWidth <= 900) {
+      document.getElementById('mobile-tabs').style.display = 'flex';
+      switchMobileTab('board');
+    }
   } else if (id === 'title-screen') {
     el.style.display = 'flex';
   } else if (id === 'narrator-screen') {
