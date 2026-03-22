@@ -868,9 +868,69 @@ body {
   opacity: 1;
   pointer-events: auto;
 }
-.card-fan-overlay.slide-out .card-fan-hand {
-  transform: translateX(-120vw);
-  transition: transform 0.8s ease-in;
+.card-fan-overlay.morphing .card-fan-hand {
+  transition: all 0.8s ease-in;
+}
+.card-fan-overlay.morphing .fan-card {
+  transition: all 0.8s ease-in;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  margin: 0 -5px;
+  background: #4CAF50 !important;
+  border-color: #388E3C !important;
+  box-shadow: none;
+}
+.card-fan-overlay.morphing .fan-card .fan-card-icon,
+.card-fan-overlay.morphing .fan-card .fan-card-name,
+.card-fan-overlay.morphing .fan-card .fan-card-type {
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.card-fan-overlay.morphing .card-fan-thumb {
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.card-fan-overlay.morph-shrink .card-fan-hand {
+  transform: scale(0);
+  opacity: 0;
+  transition: all 0.4s ease-in;
+}
+
+/* ── Bookworm ── */
+.bookworm {
+  position: fixed;
+  z-index: 10000;
+  pointer-events: none;
+}
+.bookworm svg {
+  overflow: visible;
+}
+.worm-hole {
+  position: fixed;
+  z-index: 10001;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.worm-hole.visible {
+  opacity: 1;
+}
+.worm-hole .hole-img {
+  font-size: 3rem;
+  line-height: 1;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5));
+}
+.worm-hole .hole-label {
+  font-size: 0.5rem;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 2px;
+  opacity: 0.8;
 }
 .card-fan-hand {
   position: relative;
@@ -1541,6 +1601,7 @@ body {
   <div class="handover-icon" id="handover-icon"></div>
   <div class="handover-name" id="handover-name"></div>
   <div class="handover-msg">Pass the device to this player.<br>No peeking at other players' clues!</div>
+  <div class="handover-msg" id="handover-alert" style="color:#ffd700;font-weight:bold;margin-top:10px;display:none"></div>
   <button class="handover-btn" onclick="confirmHandover()">I'm Ready!</button>
 </div>
 
@@ -1688,6 +1749,7 @@ let hasMovedThisTurn = false;
 let hasSuggestedThisTurn = false;
 let eliminatedPlayers = new Set();
 let cardFanShown = new Set();
+let accusationMoves = {}; // playerIndex -> { fromRoom, toRoom } for notification
 let hintsReceived = []; // legacy global - now per-player via p.hints
 
 // Each player: { name, characterIndex, pos: {row,col}, cards[], notebook: { characters: {}, items: {}, rooms: {} }, isAI }
@@ -1970,6 +2032,7 @@ function startGame() {
   players = [];
   eliminatedPlayers = new Set();
   cardFanShown = new Set();
+  accusationMoves = {};
   hintsReceived = [];
   gameOver = false;
   turnNumber = 1;
@@ -2079,18 +2142,199 @@ function showCardFan(playerIndex, callback) {
   overlay.classList.add('active');
 
   setTimeout(() => {
-    overlay.classList.add('slide-out');
+    // Stage 1: Move cards to center and morph into green circles
+    overlay.style.transition = 'align-items 0.5s';
+    overlay.style.alignItems = 'center';
+    hand.style.transition = 'transform 0.5s ease-in-out, padding 0.5s';
+    hand.style.paddingBottom = '0';
+    overlay.classList.add('morphing');
+    // Flatten the fan - reset card rotations
+    hand.querySelectorAll('.fan-card').forEach(fc => {
+      fc.style.transform = 'rotate(0deg) translateY(0)';
+    });
     setTimeout(() => {
-      overlay.classList.remove('active', 'slide-out');
-      // Draw attention to the notebook/checklist
-      const leftPanel = document.querySelector('.left-panel');
-      if (leftPanel) {
-        leftPanel.classList.add('attention');
-        setTimeout(() => leftPanel.classList.remove('attention'), 2000);
-      }
-      if (callback) callback();
-    }, 900);
+      // Stage 2: Shrink the circles away
+      overlay.classList.add('morph-shrink');
+      setTimeout(() => {
+        const spawnX = window.innerWidth / 2;
+        const spawnY = window.innerHeight / 2;
+        overlay.classList.remove('active', 'morphing', 'morph-shrink');
+        overlay.style.alignItems = '';
+        hand.style.paddingBottom = '';
+        hand.style.transition = '';
+        spawnBookworm(spawnX, spawnY);
+        if (callback) callback();
+      }, 400);
+    }, 800);
   }, 4000);
+}
+
+function spawnBookworm(spawnX, spawnY) {
+  const leftPanel = document.querySelector('.left-panel');
+  const panelRect = leftPanel ? leftPanel.getBoundingClientRect() : { left: 0, top: 120 };
+
+  // Create worm hole near the notebook
+  const hole = document.createElement('div');
+  hole.className = 'worm-hole';
+  hole.innerHTML = `<div class="hole-img">🕳️</div>`;
+  hole.style.left = (panelRect.left + 10) + 'px';
+  hole.style.top = (panelRect.top + 60) + 'px';
+  document.body.appendChild(hole);
+  requestAnimationFrame(() => hole.classList.add('visible'));
+
+  // Create cartoon snake SVG — FLIPPED so head faces left (direction of travel)
+  const worm = document.createElement('div');
+  worm.className = 'bookworm';
+  worm.innerHTML = `<svg width="140" height="60" viewBox="0 0 140 60" style="transform: scaleX(-1)">
+    <!-- Tail tip -->
+    <path d="M2 30 Q8 20 12 30 Q8 40 2 30Z" fill="#66BB6A"/>
+    <!-- Body segments -->
+    <ellipse class="seg s1" cx="22" cy="30" rx="10" ry="8" fill="#66BB6A"/>
+    <ellipse class="seg s2" cx="38" cy="30" rx="11" ry="9" fill="#4CAF50"/>
+    <ellipse class="seg s3" cx="54" cy="30" rx="11" ry="10" fill="#66BB6A"/>
+    <ellipse class="seg s4" cx="70" cy="30" rx="11" ry="10" fill="#4CAF50"/>
+    <!-- Belly spots -->
+    <ellipse cx="38" cy="35" rx="5" ry="3" fill="#A5D6A7" opacity="0.5"/>
+    <ellipse cx="54" cy="35" rx="5" ry="3" fill="#C8E6C9" opacity="0.5"/>
+    <ellipse cx="70" cy="35" rx="5" ry="3" fill="#A5D6A7" opacity="0.5"/>
+    <!-- Neck -->
+    <ellipse cx="84" cy="28" rx="10" ry="10" fill="#43A047"/>
+    <!-- Head -->
+    <ellipse cx="102" cy="26" rx="18" ry="16" fill="#43A047"/>
+    <!-- Cheeks -->
+    <circle cx="92" cy="34" r="4" fill="#FF8A80" opacity="0.5"/>
+    <circle cx="114" cy="30" r="3.5" fill="#FF8A80" opacity="0.5"/>
+    <!-- Eyes -->
+    <ellipse cx="94" cy="20" rx="6" ry="7" fill="white"/>
+    <ellipse cx="110" cy="19" rx="5.5" ry="6.5" fill="white"/>
+    <circle cx="96" cy="20" r="3" fill="#333"/>
+    <circle cx="112" cy="19" r="2.8" fill="#333"/>
+    <!-- Eye shine -->
+    <circle cx="97" cy="18" r="1.3" fill="white" opacity="0.9"/>
+    <circle cx="113" cy="17" r="1.1" fill="white" opacity="0.9"/>
+    <!-- Big happy smile -->
+    <path d="M92 30 Q100 42 112 29" stroke="#2E7D32" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <!-- Dimples -->
+    <path d="M90 31 Q89 33 90 34" stroke="#2E7D32" stroke-width="1" fill="none"/>
+    <path d="M114 28 Q115 30 114 32" stroke="#2E7D32" stroke-width="1" fill="none"/>
+    <!-- Tongue -->
+    <path d="M112 30 Q118 35 115 39 Q113 35 110 37" fill="#E57373"/>
+    <!-- Little hat -->
+    <rect x="96" y="6" width="16" height="3" rx="1.5" fill="#5D4037"/>
+    <rect x="99" y="-3" width="10" height="10" rx="2" fill="#5D4037"/>
+    <rect x="100" y="-1" width="8" height="2.5" rx="1" fill="#FDD835" opacity="0.6"/>
+  </svg>`;
+  document.body.appendChild(worm);
+
+  // Start from where the cards morphed, grow from small
+  const startX = spawnX || window.innerWidth / 2;
+  const startY = spawnY || window.innerHeight / 2;
+  const endX = panelRect.left + 30;
+  const endY = panelRect.top + 60;
+
+  worm.style.left = startX + 'px';
+  worm.style.top = startY + 'px';
+  worm.style.transform = 'scale(0.2)';
+  worm.style.opacity = '0';
+
+  // Pop in
+  requestAnimationFrame(() => {
+    worm.style.transition = 'transform 0.3s ease-out, opacity 0.3s';
+    worm.style.transform = 'scale(1)';
+    worm.style.opacity = '1';
+  });
+
+  // Start wriggling after pop-in
+  setTimeout(() => {
+    worm.style.transition = 'none';
+
+    // The worm overshoots the hole so it passes through it
+    const overshootX = endX - 140; // continue past the hole by the worm's width
+    const duration = 4500;
+    const startTime = Date.now();
+    const wormWidth = 140;
+
+    function animateWorm() {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+
+      // Smooth ease in-out for the full journey
+      const ease = progress < 0.5
+        ? 2 * progress * progress
+        : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+
+      // Worm travels the full distance including overshoot
+      const x = startX + (overshootX - startX) * ease;
+      const y = startY + (endY - startY) * ease;
+
+      // Bounce dampens as worm approaches the hole
+      const dampening = Math.max(0, 1 - progress * 1.5);
+      const bounce = Math.sin(progress * Math.PI * 12) * 18 * dampening;
+
+      worm.style.left = x + 'px';
+      worm.style.top = (y + bounce) + 'px';
+
+      // Wiggle the body segments
+      const segs = worm.querySelectorAll('.seg');
+      segs.forEach((s, i) => {
+        const offset = Math.sin(elapsed / 80 + i * 1.8) * 4;
+        s.setAttribute('cy', 30 + offset);
+      });
+
+      // Calculate how far the worm's head has passed the hole
+      // The head is on the left visually (SVG is flipped), so the head x = worm x
+      const headX = x;
+      const holeX = endX;
+
+      // Once the head reaches the hole, start clipping from the left
+      if (headX < holeX) {
+        // How many pixels past the hole the head has gone
+        const pixelsPast = holeX - headX;
+        // Clip that many pixels from the left side of the worm container
+        const clipPx = Math.min(pixelsPast, wormWidth);
+        worm.style.clipPath = `inset(0 0 0 ${clipPx}px)`;
+
+        // Wobble and grow the hole as worm enters
+        const enterProgress = clipPx / wormWidth;
+        const holeImg = hole.querySelector('.hole-img');
+        if (holeImg) {
+          const wobble2 = Math.sin(enterProgress * Math.PI * 6) * 5;
+          holeImg.style.transform = `scale(${1 + enterProgress * 0.4}) rotate(${wobble2}deg)`;
+        }
+      }
+
+      if (progress < 1) {
+        requestAnimationFrame(animateWorm);
+      } else {
+        worm.remove();
+        // Hole reacts: big bulge then settle with a bounce
+        const holeImg = hole.querySelector('.hole-img');
+        if (holeImg) {
+          holeImg.style.transition = 'transform 0.2s ease-out';
+          holeImg.style.transform = 'scale(1.6)';
+          setTimeout(() => {
+            holeImg.style.transform = 'scale(0.9)';
+            setTimeout(() => {
+              holeImg.style.transform = 'scale(1.1)';
+              setTimeout(() => {
+                holeImg.style.transform = 'scale(1)';
+              }, 150);
+            }, 150);
+          }, 200);
+        }
+        setTimeout(() => {
+          hole.classList.remove('visible');
+          setTimeout(() => hole.remove(), 400);
+          if (leftPanel) {
+            leftPanel.classList.add('attention');
+            setTimeout(() => leftPanel.classList.remove('attention'), 2000);
+          }
+        }, 800);
+      }
+    }
+
+    requestAnimationFrame(animateWorm);
+  }, 350);
 }
 
 function showDealingScene(callback) {
@@ -2609,6 +2853,14 @@ function showHandover() {
   document.getElementById('handover-icon').textContent = c.icon;
   document.getElementById('handover-name').textContent = `${p.name}'s Turn`;
   document.getElementById('handover-name').style.color = c.color;
+  const alertEl = document.getElementById('handover-alert');
+  if (accusationMoves[currentPlayerIndex]) {
+    const move = accusationMoves[currentPlayerIndex];
+    alertEl.innerHTML = `⚠️ You were accused by ${move.byPlayer} and moved to the <strong>${move.toRoom}</strong>!`;
+    alertEl.style.display = 'block';
+  } else {
+    alertEl.style.display = 'none';
+  }
   document.getElementById('handover-overlay').classList.add('active');
 }
 
@@ -2617,6 +2869,12 @@ function confirmHandover() {
   // Clear log so previous player's revealed cards aren't visible
   clearLog();
   addLog(`${players[currentPlayerIndex].name}'s turn begins!`, 'system');
+  // Show accusation move notification in the game log
+  if (accusationMoves[currentPlayerIndex]) {
+    const move = accusationMoves[currentPlayerIndex];
+    addLog(`⚠️ You were accused by ${move.byPlayer} and moved to the <strong>${move.toRoom}</strong>!`, 'system');
+    delete accusationMoves[currentPlayerIndex];
+  }
   renderBoard();
   renderNotebook();
   renderYourCards();
@@ -2707,6 +2965,12 @@ function advanceTurn() {
     // Show handover screen in multiplayer
     showHandover();
   } else {
+    // Single player - show accusation move notification
+    if (accusationMoves[currentPlayerIndex]) {
+      const move = accusationMoves[currentPlayerIndex];
+      addLog(`⚠️ You were accused by ${move.byPlayer} and moved to the <strong>${move.toRoom}</strong>!`, 'system');
+      delete accusationMoves[currentPlayerIndex];
+    }
     renderBoard();
     updateTurnUI();
   }
@@ -2754,6 +3018,21 @@ function processSuggestion(suggestingPlayer, charIdx, itemIdx, roomIdx) {
   const sp = players[suggestingPlayer];
   addLog(`<strong>${sp.name}</strong> suggests: ${CHARACTERS[charIdx].icon} ${CHARACTERS[charIdx].name} found the ${ITEMS[itemIdx].icon} ${ITEMS[itemIdx].name} in the ${ROOMS[roomIdx].icon} ${ROOMS[roomIdx].name}`, 'system');
   hasSuggestedThisTurn = true;
+
+  // Move the accused character to the suggestion room
+  const accusedPlayer = players.findIndex(p => p.characterIndex === charIdx);
+  if (accusedPlayer !== -1 && accusedPlayer !== suggestingPlayer && !eliminatedPlayers.has(accusedPlayer)) {
+    const accusedP = players[accusedPlayer];
+    const fromRoom = getPlayerRoom(accusedP);
+    const fromRoomName = fromRoom !== null && fromRoom !== HOMEROOM_INDEX ? ROOMS[fromRoom].name :
+                         fromRoom === HOMEROOM_INDEX ? 'Homeroom' : 'the hallway';
+    const roomPos = ROOM_POSITIONS[roomIdx];
+    accusedP.pos = { ...roomPos };
+    const toRoomName = ROOMS[roomIdx].name;
+    addLog(`${CHARACTERS[charIdx].icon} ${accusedP.name} was moved to the <strong>${toRoomName}</strong>!`, 'system');
+    accusationMoves[accusedPlayer] = { fromRoom: fromRoomName, toRoom: toRoomName, byPlayer: sp.name };
+    renderBoard();
+  }
 
   // Go around asking players to disprove
   let disproved = false;
