@@ -29,6 +29,81 @@ body {
   overflow-x: hidden;
 }
 
+/* ── Password Screen ── */
+#password-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  text-align: center;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  padding: 20px;
+}
+
+#password-screen h1 {
+  font-size: 3rem;
+  background: linear-gradient(135deg, var(--gold), var(--orange), var(--pink));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 10px;
+}
+
+#password-screen .lock-icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+}
+
+#password-screen .pw-subtitle {
+  color: #aaa;
+  margin-bottom: 30px;
+  font-size: 1.1rem;
+}
+
+.pw-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  width: 300px;
+}
+
+.pw-form input {
+  width: 100%;
+  padding: 12px 18px;
+  font-size: 1.1rem;
+  border: 2px solid var(--purple);
+  background: rgba(123, 47, 247, 0.1);
+  color: var(--text);
+  border-radius: 12px;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.pw-form input:focus {
+  border-color: var(--gold);
+}
+
+.pw-form input.pw-error {
+  border-color: #c62828;
+  animation: pw-shake 0.4s ease-in-out;
+}
+
+.pw-error-msg {
+  color: #c62828;
+  font-size: 0.9rem;
+  min-height: 1.2em;
+}
+
+@keyframes pw-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-10px); }
+  40% { transform: translateX(10px); }
+  60% { transform: translateX(-6px); }
+  80% { transform: translateX(6px); }
+}
+
 /* ── Title Screen ── */
 #title-screen {
   display: flex;
@@ -1071,7 +1146,18 @@ body {
 <body>
 
 <!-- ══════ Title Screen ══════ -->
-<div id="title-screen">
+<div id="password-screen">
+  <div class="lock-icon">🔒</div>
+  <h1>Lost & Found</h1>
+  <p class="pw-subtitle">Enter the password to continue</p>
+  <div class="pw-form">
+    <input type="password" id="pw-input" placeholder="Password" onkeydown="if(event.key==='Enter')checkPassword()">
+    <button class="menu-btn" onclick="checkPassword()">Enter</button>
+    <div class="pw-error-msg" id="pw-error"></div>
+  </div>
+</div>
+
+<div id="title-screen" style="display:none">
   <h1>Brearley Lost and Found Class 1AB</h1>
   <p class="subtitle">A mystery deduction game for Class 1AB detectives</p>
   <button class="menu-btn" onclick="showSetup('single')">1 Player (vs Computer)</button>
@@ -1258,6 +1344,24 @@ body {
 
 <script>
 // ═══════════════════════════════════════════════
+// Password Gate
+// ═══════════════════════════════════════════════
+const SITE_PASSWORD = 'class1ab';
+
+function checkPassword() {
+  const input = document.getElementById('pw-input');
+  const error = document.getElementById('pw-error');
+  if (input.value.toLowerCase() === SITE_PASSWORD) {
+    document.getElementById('password-screen').style.display = 'none';
+    document.getElementById('title-screen').style.display = 'flex';
+  } else {
+    input.classList.add('pw-error');
+    error.textContent = 'Incorrect password. Try again!';
+    setTimeout(() => input.classList.remove('pw-error'), 400);
+  }
+}
+
+// ═══════════════════════════════════════════════
 // Game Data
 // ═══════════════════════════════════════════════
 const CHARACTERS = [
@@ -1350,7 +1454,7 @@ let hintsReceived = []; // legacy global - now per-player via p.hints
 // Screen Management
 // ═══════════════════════════════════════════════
 function showScreen(id) {
-  ['title-screen', 'setup-screen', 'game-screen', 'narrator-screen'].forEach(s => {
+  ['password-screen', 'title-screen', 'setup-screen', 'game-screen', 'narrator-screen'].forEach(s => {
     document.getElementById(s).style.display = 'none';
   });
   document.getElementById('narrator-mini').style.display = 'none';
