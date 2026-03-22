@@ -561,6 +561,25 @@ body {
   border-color: var(--green);
 }
 
+.left-panel.attention .notebook-item .mark {
+  width: 26px;
+  height: 26px;
+  font-size: 1rem;
+  border-width: 3px;
+  border-color: var(--gold);
+  animation: mark-wobble 0.4s ease-in-out infinite alternate;
+}
+@keyframes mark-wobble {
+  0% { transform: rotate(-8deg) scale(1); }
+  50% { transform: rotate(8deg) scale(1.1); }
+  100% { transform: rotate(-8deg) scale(1); }
+}
+.left-panel.attention .panel-title {
+  animation: mark-wobble 0.4s ease-in-out infinite alternate;
+  color: var(--gold);
+  font-size: 1.1rem;
+}
+
 /* ── Board ── */
 .board-area {
   background: var(--bg);
@@ -633,16 +652,17 @@ body {
 }
 
 .player-token {
-  width: 22px;
-  height: 22px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.6rem;
-  font-weight: 700;
-  color: white;
-  border: 2px solid rgba(255,255,255,0.5);
+  font-size: 1.2rem;
+  line-height: 1;
+  background: none !important;
+  border: none;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.4));
 }
 
 .secret-passage {
@@ -652,6 +672,36 @@ body {
   font-size: 0.65rem;
   opacity: 0.7;
   cursor: help;
+}
+
+.passage-alert {
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: passage-flash 0.8s ease-in-out infinite alternate;
+  pointer-events: none;
+  z-index: 5;
+}
+.passage-alert .passage-arrow {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+.passage-alert .passage-text {
+  font-size: 0.4rem;
+  color: var(--gold);
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  text-shadow: 0 0 4px rgba(255,215,0,0.6);
+}
+@keyframes passage-flash {
+  0% { opacity: 0.4; transform: translateX(-50%) scale(0.95); }
+  100% { opacity: 1; transform: translateX(-50%) scale(1.05); }
 }
 
 .homeroom-cell {
@@ -688,6 +738,76 @@ body {
 .hallway-cell.hall-reachable .hall-label {
   color: rgba(255,215,0,0.6);
   font-size: 0.9rem;
+}
+
+/* ── Character Randomizer ── */
+.randomizer-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9997;
+  background: linear-gradient(135deg, #2a3a5c 0%, #253458 50%, #1e4a7a 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s;
+}
+.randomizer-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+.randomizer-title {
+  font-size: 1.5rem;
+  color: var(--gold);
+  margin-bottom: 30px;
+  font-weight: bold;
+}
+.randomizer-slots {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 600px;
+}
+.randomizer-slot {
+  width: 100px;
+  height: 130px;
+  background: rgba(255,255,255,0.05);
+  border: 2px solid rgba(255,215,0,0.3);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.randomizer-slot.locked {
+  border-color: var(--gold);
+  box-shadow: 0 0 15px rgba(255,215,0,0.3);
+}
+.randomizer-slot .slot-icon {
+  font-size: 2.5rem;
+  transition: transform 0.1s;
+}
+.randomizer-slot .slot-name {
+  font-size: 0.75rem;
+  color: var(--text);
+  margin-top: 6px;
+  font-weight: bold;
+  text-align: center;
+  padding: 0 4px;
+}
+.randomizer-slot.spinning .slot-icon,
+.randomizer-slot.spinning .slot-name {
+  animation: slot-blur 0.08s linear infinite alternate;
+}
+@keyframes slot-blur {
+  0% { opacity: 1; transform: translateY(-2px); }
+  100% { opacity: 0.7; transform: translateY(2px); }
 }
 
 /* ── Dealing Scene ── */
@@ -749,8 +869,8 @@ body {
   pointer-events: auto;
 }
 .card-fan-overlay.slide-out .card-fan-hand {
-  transform: translateX(120vw);
-  transition: transform 0.6s ease-in;
+  transform: translateX(-120vw);
+  transition: transform 0.8s ease-in;
 }
 .card-fan-hand {
   position: relative;
@@ -1372,6 +1492,12 @@ body {
   </button>
 </div>
 
+<!-- ══════ Character Randomizer ══════ -->
+<div class="randomizer-overlay" id="randomizer-overlay">
+  <div class="randomizer-title">Selecting Today's Characters...</div>
+  <div class="randomizer-slots" id="randomizer-slots"></div>
+</div>
+
 <!-- ══════ Dealing Scene ══════ -->
 <div class="dealing-overlay" id="dealing-overlay">
   <div class="dealing-scene">
@@ -1619,12 +1745,95 @@ function backToTitle() {
   showScreen('title-screen');
 }
 
+function showCharacterRandomizer(callback) {
+  const overlay = document.getElementById('randomizer-overlay');
+  const slotsEl = document.getElementById('randomizer-slots');
+
+  // Build 5 slot elements
+  let html = '';
+  for (let i = 0; i < 5; i++) {
+    html += `<div class="randomizer-slot spinning" id="rslot-${i}">
+      <div class="slot-icon" id="rslot-icon-${i}">?</div>
+      <div class="slot-name" id="rslot-name-${i}">???</div>
+    </div>`;
+  }
+  slotsEl.innerHTML = html;
+  overlay.classList.add('active');
+
+  // Spin each slot, cycling through random names/icons, stopping one at a time
+  const shuffledNames = [...ALL_NAMES];
+  const shuffledIcons = [...ANIMAL_ICONS];
+  for (let i = shuffledNames.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffledNames[i], shuffledNames[j]] = [shuffledNames[j], shuffledNames[i]];
+  }
+  for (let i = shuffledIcons.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffledIcons[i], shuffledIcons[j]] = [shuffledIcons[j], shuffledIcons[i]];
+  }
+
+  // Spin intervals for each slot
+  const intervals = [];
+  for (let i = 0; i < 5; i++) {
+    let speed = 60;
+    const iconEl = document.getElementById(`rslot-icon-${i}`);
+    const nameEl = document.getElementById(`rslot-name-${i}`);
+    const slotEl = document.getElementById(`rslot-${i}`);
+
+    let tick = 0;
+    const interval = setInterval(() => {
+      const ri = tick % ALL_NAMES.length;
+      const ai = tick % ANIMAL_ICONS.length;
+      iconEl.textContent = ANIMAL_ICONS[ai];
+      nameEl.textContent = ALL_NAMES[ri];
+      tick++;
+    }, speed);
+    intervals.push(interval);
+
+    // Stop each slot with increasing delay
+    const stopDelay = 800 + i * 600;
+    setTimeout(() => {
+      clearInterval(intervals[i]);
+      // Slow down effect: a few more ticks at decreasing speed
+      let remaining = 6;
+      let slowSpeed = 120;
+      function slowTick() {
+        if (remaining <= 0) {
+          // Land on final character
+          iconEl.textContent = CHARACTERS[i].icon;
+          nameEl.textContent = CHARACTERS[i].name;
+          slotEl.classList.remove('spinning');
+          slotEl.classList.add('locked');
+          // If last slot, finish up
+          if (i === 4) {
+            setTimeout(() => {
+              overlay.classList.remove('active');
+              if (callback) callback();
+            }, 600);
+          }
+          return;
+        }
+        const ri = Math.floor(Math.random() * ALL_NAMES.length);
+        const ai = Math.floor(Math.random() * ANIMAL_ICONS.length);
+        iconEl.textContent = ANIMAL_ICONS[ai];
+        nameEl.textContent = ALL_NAMES[ri];
+        remaining--;
+        slowSpeed += 40;
+        setTimeout(slowTick, slowSpeed);
+      }
+      slowTick();
+    }, stopDelay);
+  }
+}
+
 function showSetup(mode) {
   gameMode = mode;
   randomizeCharacters();
-  showScreen('setup-screen');
-  document.getElementById('setup-title').textContent = mode === 'single' ? 'Single Player Setup' : 'Multiplayer Setup';
-  buildSetupForm();
+  showCharacterRandomizer(() => {
+    showScreen('setup-screen');
+    document.getElementById('setup-title').textContent = mode === 'single' ? 'Single Player Setup' : 'Multiplayer Setup';
+    buildSetupForm();
+  });
 }
 
 function buildSetupForm() {
@@ -1873,8 +2082,14 @@ function showCardFan(playerIndex, callback) {
     overlay.classList.add('slide-out');
     setTimeout(() => {
       overlay.classList.remove('active', 'slide-out');
+      // Draw attention to the notebook/checklist
+      const leftPanel = document.querySelector('.left-panel');
+      if (leftPanel) {
+        leftPanel.classList.add('attention');
+        setTimeout(() => leftPanel.classList.remove('attention'), 2000);
+      }
       if (callback) callback();
-    }, 700);
+    }, 900);
   }, 4000);
 }
 
@@ -2072,8 +2287,15 @@ function renderBoard() {
   let reachable = new Map();
   const showReachable = !gameOver && !players[currentPlayerIndex].isAI &&
     currentPlayerIndex < players.length && diceRoll > 0 && !hasMovedThisTurn;
+  let passageFromRoom = null;
+  let passageToRoom = null;
   if (showReachable) {
     reachable = getReachableCells(players[currentPlayerIndex].pos, diceRoll);
+    const curRoom = getPlayerRoom(players[currentPlayerIndex]);
+    if (curRoom !== null && SECRET_PASSAGES[curRoom] !== undefined) {
+      passageFromRoom = curRoom;
+      passageToRoom = SECRET_PASSAGES[curRoom];
+    }
   }
 
   for (let r = 0; r < 5; r++) {
@@ -2087,7 +2309,7 @@ function renderBoard() {
         .map((p, pi) => ({ ...p, pi }))
         .filter(p => p.pos.row === r && p.pos.col === c && !eliminatedPlayers.has(p.pi));
       const tokens = playersHere.map(p =>
-        `<div class="player-token" style="background:${CHARACTERS[p.characterIndex].color}" title="${p.name}">${p.name[0]}</div>`
+        `<div class="player-token" title="${p.name}">${CHARACTERS[p.characterIndex].icon}</div>`
       ).join('');
 
       // Highlight current cell so player can choose to stay
@@ -2100,12 +2322,15 @@ function renderBoard() {
         const hasPassage = !isHomeroom && SECRET_PASSAGES[roomIdx] !== undefined;
         const passageTarget = hasPassage ? ROOMS[SECRET_PASSAGES[roomIdx]].name : '';
 
+        const showPassageAlert = !isHomeroom && (roomIdx === passageFromRoom || roomIdx === passageToRoom);
+        const passageArrowDir = roomIdx === passageFromRoom ? '➡️' : '⬅️';
         html += `
           <div class="board-cell room-cell ${isHomeroom ? 'homeroom-cell' : ''} ${cellHighlight ? 'highlight' : ''}" onclick="clickCell(${r},${c})">
             ${hasPassage ? `<span class="secret-passage" title="Secret passage to ${passageTarget}">🚪</span>` : ''}
             <div class="room-icon">${room.icon}</div>
             <div class="room-name">${room.name}</div>
             ${isHomeroom ? '<div class="homeroom-label">Make Accusation Here</div>' : ''}
+            ${showPassageAlert ? `<div class="passage-alert"><span class="passage-arrow">${passageArrowDir}</span><span class="passage-text">Secret Passageway!</span></div>` : ''}
             <div class="room-players">${tokens}</div>
           </div>`;
       } else {
