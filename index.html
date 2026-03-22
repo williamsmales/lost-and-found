@@ -649,17 +649,50 @@ body {
 }
 
 .player-token {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-size: 1.2rem;
-  line-height: 1;
-  background: none !important;
-  border: none;
   filter: drop-shadow(0 1px 2px rgba(0,0,0,0.4));
+}
+.player-token .token-icon {
+  font-size: 1.4rem;
+  line-height: 1;
+}
+.player-token .token-name {
+  font-size: 0.4rem;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+  line-height: 1;
+  margin-top: 1px;
+}
+.player-token.is-you .token-name {
+  color: var(--gold);
+}
+
+/* ── Action Prompts ── */
+.prompt-pulse {
+  animation: prompt-glow 0.8s ease-in-out infinite alternate;
+}
+@keyframes prompt-glow {
+  0% { box-shadow: 0 0 5px rgba(255,215,0,0.3); }
+  100% { box-shadow: 0 0 20px rgba(255,215,0,0.8), 0 0 40px rgba(255,215,0,0.3); }
+}
+.prompt-hint {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: var(--gold);
+  animation: prompt-glow-text 0.8s ease-in-out infinite alternate;
+  white-space: nowrap;
+}
+@keyframes prompt-glow-text {
+  0% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+.action-btn.prompt-pulse {
+  border-color: var(--gold) !important;
+  background: rgba(255,215,0,0.15) !important;
 }
 
 .secret-passage {
@@ -1405,7 +1438,7 @@ body {
             <circle cx="124" cy="94" r="6" fill="#f0a0a0" opacity="0.4"/>
           </svg>
         </div>
-        <h1>Brearley L&F 1AB</h1>
+        <span class="prompt-hint" id="action-prompt"></span>
       </div>
       <div class="turn-info">
         <span id="turn-text" class="turn-badge" style="background:var(--purple)">Turn 1</span>
@@ -2451,7 +2484,7 @@ function renderBoard() {
         .map((p, pi) => ({ ...p, pi }))
         .filter(p => p.pos.row === r && p.pos.col === c && !eliminatedPlayers.has(p.pi));
       const tokens = playersHere.map(p =>
-        `<div class="player-token" title="${p.name}">${CHARACTERS[p.characterIndex].icon}</div>`
+        `<div class="player-token ${p.pi === getActiveHumanIndex() ? 'is-you' : ''}" title="${p.name}"><span class="token-icon">${CHARACTERS[p.characterIndex].icon}</span><span class="token-name">${p.pi === getActiveHumanIndex() ? p.name + ' (You)' : p.name}</span></div>`
       ).join('');
 
       // Highlight current cell so player can choose to stay
@@ -2565,6 +2598,17 @@ function updateTurnUI() {
   const diceEl = document.getElementById('dice-icon');
   const resultEl = document.getElementById('dice-result');
   const diceArea = document.getElementById('dice-area');
+  const promptEl = document.getElementById('action-prompt');
+  const suggestBtn = document.getElementById('suggest-btn');
+  const accuseBtn = document.getElementById('accuse-btn');
+  const endTurnBtn = document.getElementById('end-turn-btn');
+
+  // Clear prompt classes
+  diceEl.classList.remove('prompt-pulse');
+  suggestBtn.classList.remove('prompt-pulse');
+  accuseBtn.classList.remove('prompt-pulse');
+  endTurnBtn.classList.remove('prompt-pulse');
+  promptEl.textContent = '';
 
   // Show dice area only on human turns
   diceArea.style.display = isHumanTurn ? 'inline-flex' : 'none';
@@ -2572,23 +2616,44 @@ function updateTurnUI() {
   // Dice clickable state
   if (isHumanTurn && !hasMovedThisTurn && diceRoll === 0 && !isRolling) {
     diceEl.classList.remove('disabled');
+    diceEl.classList.add('prompt-pulse');
     diceEl.textContent = '🎲';
     resultEl.textContent = 'Click to roll!';
+    promptEl.textContent = '👆 Roll the dice!';
   } else if (!isRolling) {
     diceEl.classList.add('disabled');
     if (diceRoll > 0) {
-      resultEl.textContent = `Rolled ${diceRoll} — move!`;
+      resultEl.textContent = `Rolled ${diceRoll}`;
+      promptEl.textContent = '👆 Click a room to move!';
     } else if (hasMovedThisTurn) {
       resultEl.textContent = '';
     }
   }
 
-  document.getElementById('end-turn-btn').style.display = isHumanTurn && (hasMovedThisTurn || hasSuggestedThisTurn) ? '' : 'none';
   const currentRoomIdx = isHumanTurn ? getPlayerRoom(players[currentPlayerIndex]) : null;
   const inRegularRoom = currentRoomIdx !== null && currentRoomIdx !== HOMEROOM_INDEX;
-  document.getElementById('suggest-btn').disabled = !isHumanTurn || !hasMovedThisTurn || hasSuggestedThisTurn || !inRegularRoom;
   const inHomeroom = isHumanTurn && getPlayerRoom(players[currentPlayerIndex]) === HOMEROOM_INDEX;
-  document.getElementById('accuse-btn').disabled = !isHumanTurn || !inHomeroom;
+
+  suggestBtn.disabled = !isHumanTurn || !hasMovedThisTurn || hasSuggestedThisTurn || !inRegularRoom;
+  accuseBtn.disabled = !isHumanTurn || !inHomeroom;
+  endTurnBtn.style.display = isHumanTurn && (hasMovedThisTurn || hasSuggestedThisTurn) ? '' : 'none';
+
+  // Highlight next action after moving
+  if (isHumanTurn && hasMovedThisTurn && !hasSuggestedThisTurn) {
+    if (inRegularRoom) {
+      suggestBtn.classList.add('prompt-pulse');
+      promptEl.textContent = '👆 Make a suggestion!';
+    } else if (inHomeroom) {
+      accuseBtn.classList.add('prompt-pulse');
+      promptEl.textContent = '👆 Make an accusation!';
+    } else {
+      endTurnBtn.classList.add('prompt-pulse');
+      promptEl.textContent = '👆 End your turn';
+    }
+  } else if (isHumanTurn && hasSuggestedThisTurn) {
+    endTurnBtn.classList.add('prompt-pulse');
+    promptEl.textContent = '👆 End your turn';
+  }
 }
 
 // ═══════════════════════════════════════════════
