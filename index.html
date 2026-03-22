@@ -14,9 +14,9 @@
   --teal: #00bcd4;
   --green: #4caf50;
   --orange: #ff9800;
-  --bg: #1a1a2e;
-  --bg2: #16213e;
-  --card: #0f3460;
+  --bg: #2a3a5c;
+  --bg2: #253458;
+  --card: #1e4a7a;
   --text: #e8e8e8;
   --gold: #ffd700;
 }
@@ -37,7 +37,7 @@ body {
   justify-content: center;
   min-height: 100vh;
   text-align: center;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  background: linear-gradient(135deg, #2a3a5c 0%, #253458 50%, #1e4a7a 100%);
   padding: 20px;
 }
 
@@ -112,7 +112,7 @@ body {
   justify-content: center;
   min-height: 100vh;
   text-align: center;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  background: linear-gradient(135deg, #2a3a5c 0%, #253458 50%, #1e4a7a 100%);
   padding: 20px;
 }
 
@@ -165,7 +165,7 @@ body {
   justify-content: center;
   min-height: 100vh;
   text-align: center;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  background: linear-gradient(135deg, #2a3a5c 0%, #253458 50%, #1e4a7a 100%);
   padding: 20px;
 }
 
@@ -695,7 +695,7 @@ body {
   position: fixed;
   inset: 0;
   z-index: 9998;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  background: linear-gradient(135deg, #2a3a5c 0%, #253458 50%, #1e4a7a 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1445,13 +1445,49 @@ function checkPassword() {
 // ═══════════════════════════════════════════════
 // Game Data
 // ═══════════════════════════════════════════════
-const CHARACTERS = [
-  { name: 'Penelope', color: '#e91e8c', icon: '👧' },
-  { name: 'Shayna', color: '#7b2ff7', icon: '👧🏻' },
-  { name: 'Audrey', color: '#2196f3', icon: '👧🏼' },
-  { name: 'Gia', color: '#00bcd4', icon: '👧🏽' },
-  { name: 'Aomi', color: '#4caf50', icon: '👧🏾' },
+const ALL_NAMES = [
+  'Phoebe', 'Coco', 'Eloise', 'Shayna', 'Lulu', 'Gia', 'Aurora', 'Frances',
+  'Josie', 'Angelina', 'Izzy', 'Aomi', 'Aarti', 'Audrey', 'Elliot', 'Ella',
+  'Penelope', 'Thea', 'Naomie'
 ];
+
+const ANIMAL_ICONS = [
+  '🐱', '🐶', '🐰', '🐻', '🦊', '🐼', '🐨', '🐯',
+  '🦁', '🐮', '🐷', '🐸', '🐵', '🐔', '🦄', '🐧',
+  '🐹', '🦋', '🐝'
+];
+
+const CHARACTER_COLORS = [
+  '#e91e8c', '#7b2ff7', '#2196f3', '#00bcd4', '#4caf50',
+  '#ff9800', '#e53935', '#9c27b0', '#00897b', '#f06292'
+];
+
+let CHARACTERS = [];
+
+function randomizeCharacters() {
+  const names = [...ALL_NAMES];
+  const icons = [...ANIMAL_ICONS];
+  // Shuffle both arrays
+  for (let i = names.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [names[i], names[j]] = [names[j], names[i]];
+  }
+  for (let i = icons.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [icons[i], icons[j]] = [icons[j], icons[i]];
+  }
+  CHARACTERS = [];
+  for (let i = 0; i < 5; i++) {
+    CHARACTERS.push({
+      name: names[i],
+      color: CHARACTER_COLORS[i],
+      icon: icons[i]
+    });
+  }
+}
+
+// Initialize on load
+randomizeCharacters();
 
 const ITEMS = [
   { name: 'Library Book', icon: '📚' },
@@ -1585,6 +1621,7 @@ function backToTitle() {
 
 function showSetup(mode) {
   gameMode = mode;
+  randomizeCharacters();
   showScreen('setup-screen');
   document.getElementById('setup-title').textContent = mode === 'single' ? 'Single Player Setup' : 'Multiplayer Setup';
   buildSetupForm();
