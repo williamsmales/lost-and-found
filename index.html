@@ -1815,10 +1815,6 @@ function buildSetupForm() {
   if (gameMode === 'single') {
     html += `
       <div class="form-group">
-        <label>Your Name</label>
-        <input type="text" id="p1-name" placeholder="Enter your name" value="Detective">
-      </div>
-      <div class="form-group">
         <label>Choose Your Character</label>
         <div class="character-select" id="char-select-0">
           ${CHARACTERS.map((c, i) => `
@@ -1838,12 +1834,9 @@ function buildSetupForm() {
       </div>`;
   } else {
     const currentCount = document.getElementById('player-count')?.value || '3';
-    // Preserve existing player names and character selections
-    const savedNames = {};
+    // Preserve existing character selections
     const savedChars = {};
     for (let i = 0; i < 5; i++) {
-      const nameEl = document.getElementById(`p${i}-name`);
-      if (nameEl) savedNames[i] = nameEl.value;
       savedChars[i] = selectedChars[i];
     }
     html += `
@@ -1858,14 +1851,9 @@ function buildSetupForm() {
       </div>`;
     const count = parseInt(currentCount);
     for (let p = 0; p < count; p++) {
-      const nameVal = savedNames.hasOwnProperty(p) ? savedNames[p] : `Player ${p + 1}`;
       const charVal = savedChars.hasOwnProperty(p) ? savedChars[p] : p;
       selectedChars[p] = charVal;
       html += `
-        <div class="form-group">
-          <label>Player ${p + 1} Name</label>
-          <input type="text" id="p${p}-name" placeholder="Player ${p + 1}" value="${nameVal.replace(/"/g, '&quot;')}">
-        </div>
         <div class="form-group">
           <label>Player ${p + 1} Character</label>
           <div class="character-select" id="char-select-${p}">
@@ -1949,7 +1937,7 @@ function startGame() {
   currentPlayerIndex = 0;
 
   if (gameMode === 'single') {
-    const name = document.getElementById('p1-name').value || 'Detective';
+    const name = CHARACTERS[selectedChars[0]].name;
     const aiCount = parseInt(document.getElementById('ai-count').value);
     players.push({ name, characterIndex: selectedChars[0], isAI: false });
 
@@ -1963,7 +1951,7 @@ function startGame() {
   } else {
     const count = parseInt(document.getElementById('player-count').value);
     for (let i = 0; i < count; i++) {
-      const name = document.getElementById(`p${i}-name`).value || `Player ${i + 1}`;
+      const name = CHARACTERS[selectedChars[i]].name;
       players.push({ name, characterIndex: selectedChars[i], isAI: false });
     }
     // Fill remaining spots with AI if checked
