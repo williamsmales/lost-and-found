@@ -266,37 +266,34 @@ body {
 
 /* Minimized narrator icon */
 .narrator-mini {
-  position: fixed;
-  bottom: 15px;
-  left: 15px;
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--purple), var(--pink));
   border: 2px solid rgba(255,255,255,0.3);
   cursor: pointer;
-  z-index: 500;
   display: none;
   align-items: center;
   justify-content: center;
   transition: all 0.3s;
-  box-shadow: 0 3px 15px rgba(123,47,247,0.4);
+  box-shadow: 0 2px 10px rgba(123,47,247,0.4);
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 .narrator-mini:hover {
   transform: scale(1.15);
-  box-shadow: 0 5px 25px rgba(123,47,247,0.6);
+  box-shadow: 0 4px 20px rgba(123,47,247,0.6);
 }
 
 .narrator-mini svg {
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
 }
 
 .narrator-mini-tooltip {
   position: fixed;
-  bottom: 70px;
+  top: 65px;
   left: 15px;
   background: var(--bg2);
   color: var(--text);
@@ -1105,7 +1102,10 @@ body {
 .modal-overlay {
   display: none;
   position: fixed;
-  inset: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 260px;
   background: rgba(0,0,0,0.7);
   z-index: 1000;
   align-items: center;
@@ -1300,6 +1300,7 @@ body {
   .mobile-tabs { display: flex; }
   #title-screen h1 { font-size: 2.5rem; }
   #password-screen h1 { font-size: 2rem; }
+  .modal-overlay { left: 0; }
 }
 </style>
 </head>
@@ -1383,28 +1384,29 @@ body {
   </div>
 </div>
 
-<!-- Minimized narrator icon (shown during gameplay) -->
-<div class="narrator-mini" id="narrator-mini" onclick="toggleNarratorTip()" title="Mrs Uy">
-  <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-    <ellipse cx="100" cy="72" rx="52" ry="55" fill="#3d2314"/>
-    <ellipse cx="100" cy="80" rx="42" ry="44" fill="#f4c28d"/>
-    <path d="M58 65 Q70 40 100 42 Q130 40 142 65 Q135 50 100 48 Q65 50 58 65Z" fill="#3d2314"/>
-    <ellipse cx="84" cy="78" rx="5" ry="6" fill="#2c1810"/>
-    <ellipse cx="116" cy="78" rx="5" ry="6" fill="#2c1810"/>
-    <rect x="72" y="70" width="24" height="18" rx="9" fill="none" stroke="#666" stroke-width="2"/>
-    <rect x="104" y="70" width="24" height="18" rx="9" fill="none" stroke="#666" stroke-width="2"/>
-    <line x1="96" y1="79" x2="104" y2="79" stroke="#666" stroke-width="2"/>
-    <path d="M85 96 Q100 108 115 96" stroke="#c4785c" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-    <path d="M60 125 Q65 115 80 112 Q100 108 120 112 Q135 115 140 125 L145 170 L55 170Z" fill="#5b3cc4"/>
-  </svg>
-</div>
 <div class="narrator-mini-tooltip" id="narrator-tooltip">Mrs Uy says: "You can do it, detectives!"</div>
 
 <!-- ══════ Game Screen ══════ -->
 <div id="game-screen">
   <div class="game-layout">
     <div class="top-bar">
-      <h1>Brearley L&F 1AB</h1>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="narrator-mini" id="narrator-mini" onclick="toggleNarratorTip()" title="Mrs Uy">
+          <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="100" cy="72" rx="52" ry="55" fill="#3d2314"/>
+            <ellipse cx="100" cy="80" rx="42" ry="44" fill="#f4c28d"/>
+            <path d="M58 65 Q70 40 100 42 Q130 40 142 65 Q135 50 100 48 Q65 50 58 65Z" fill="#3d2314"/>
+            <ellipse cx="84" cy="78" rx="5" ry="6" fill="#2c1810"/>
+            <ellipse cx="116" cy="78" rx="5" ry="6" fill="#2c1810"/>
+            <circle cx="86" cy="76" r="2" fill="white" opacity="0.8"/>
+            <circle cx="118" cy="76" r="2" fill="white" opacity="0.8"/>
+            <path d="M85 96 Q100 108 115 96" stroke="#c4785c" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            <circle cx="76" cy="94" r="6" fill="#f0a0a0" opacity="0.4"/>
+            <circle cx="124" cy="94" r="6" fill="#f0a0a0" opacity="0.4"/>
+          </svg>
+        </div>
+        <h1>Brearley L&F 1AB</h1>
+      </div>
       <div class="turn-info">
         <span id="turn-text" class="turn-badge" style="background:var(--purple)">Turn 1</span>
         <span id="current-player-name" class="turn-badge" style="background:var(--pink)">Player</span>
@@ -1421,10 +1423,6 @@ body {
     <div class="left-panel">
       <div class="panel-title">Detective Notebook</div>
       <div id="notebook"></div>
-      <div class="your-cards-area">
-        <h4>Your Cards</h4>
-        <div id="your-cards" class="your-cards"></div>
-      </div>
     </div>
 
     <!-- Center: Board -->
@@ -1434,6 +1432,10 @@ body {
 
     <!-- Right: Actions & Log -->
     <div class="right-panel">
+      <div class="your-cards-area">
+        <h4>Your Cards</h4>
+        <div id="your-cards" class="your-cards"></div>
+      </div>
       <div class="actions-area">
         <div class="panel-title">Actions</div>
         <button id="suggest-btn" class="action-btn suggest" onclick="openSuggestion()" disabled>Make a Suggestion</button>
@@ -2844,60 +2846,119 @@ function processSuggestion(suggestingPlayer, charIdx, itemIdx, roomIdx) {
   }
 
   // Go around asking players to disprove
-  let disproved = false;
-  for (let offset = 1; offset < players.length; offset++) {
-    const pi = (suggestingPlayer + offset) % players.length;
-    if (eliminatedPlayers.has(pi)) continue;
-    const other = players[pi];
-    const matchingCards = other.cards.filter(c =>
-      (c.type === 'character' && c.index === charIdx) ||
-      (c.type === 'item' && c.index === itemIdx) ||
-      (c.type === 'room' && c.index === roomIdx)
-    );
+  processDisprove(suggestingPlayer, charIdx, itemIdx, roomIdx, 1);
+}
 
-    if (matchingCards.length > 0) {
-      // Pick a random matching card to show
-      const shown = matchingCards[Math.floor(Math.random() * matchingCards.length)];
-      const cardData = shown.type === 'character' ? CHARACTERS[shown.index] :
-                       shown.type === 'item' ? ITEMS[shown.index] : ROOMS[shown.index];
+function processDisprove(suggestingPlayer, charIdx, itemIdx, roomIdx, offset) {
+  const sp = players[suggestingPlayer];
 
-      if (sp.isAI) {
-        // AI sees the card (update its notebook)
-        const cat = shown.type === 'character' ? 'characters' : shown.type === 'item' ? 'items' : 'rooms';
-        sp.notebook[cat][shown.index] = 1;
-        addLog(`${other.name} showed a card to ${sp.name} (secret).`);
-      } else {
-        // Show the human player the card
-        addLog(`${other.name} showed you: <strong>${cardData.icon || ''} ${cardData.name}</strong>`, 'reveal');
-        // Auto-mark in notebook
-        const cat = shown.type === 'character' ? 'characters' : shown.type === 'item' ? 'items' : 'rooms';
-        sp.notebook[cat][shown.index] = 1;
-        // Record hint on the player who made the suggestion (avoid duplicates)
-        if (!sp.hints.some(h => h.type === shown.type && h.index === shown.index)) {
-          sp.hints.push({ type: shown.type, index: shown.index, shownBy: other.name });
-        }
-        renderNotebook();
-    
-
-        showRevealModal(other.name, cardData);
-      }
-      disproved = true;
-      break;
-    }
-  }
-
-  if (!disproved) {
+  if (offset >= players.length) {
+    // Nobody could disprove
     addLog(`Nobody could disprove the suggestion!`, 'system');
     if (sp.isAI) {
-      // AI notes that nobody disproved - these might be the solution
       const cat1 = 'characters', cat2 = 'items', cat3 = 'rooms';
       if (!sp.notebook[cat1][charIdx]) sp.notebook[cat1][charIdx] = 2;
       if (!sp.notebook[cat2][itemIdx]) sp.notebook[cat2][itemIdx] = 2;
       if (!sp.notebook[cat3][roomIdx]) sp.notebook[cat3][roomIdx] = 2;
     }
+    updateTurnUI();
+    return;
   }
 
+  const pi = (suggestingPlayer + offset) % players.length;
+  if (eliminatedPlayers.has(pi)) {
+    processDisprove(suggestingPlayer, charIdx, itemIdx, roomIdx, offset + 1);
+    return;
+  }
+
+  const other = players[pi];
+  const matchingCards = other.cards.filter(c =>
+    (c.type === 'character' && c.index === charIdx) ||
+    (c.type === 'item' && c.index === itemIdx) ||
+    (c.type === 'room' && c.index === roomIdx)
+  );
+
+  if (matchingCards.length === 0) {
+    processDisprove(suggestingPlayer, charIdx, itemIdx, roomIdx, offset + 1);
+    return;
+  }
+
+  // This player has matching cards
+  if (other.isAI) {
+    // AI picks a random card to show
+    const shown = matchingCards[Math.floor(Math.random() * matchingCards.length)];
+    const cardData = shown.type === 'character' ? CHARACTERS[shown.index] :
+                     shown.type === 'item' ? ITEMS[shown.index] : ROOMS[shown.index];
+
+    if (sp.isAI) {
+      const cat = shown.type === 'character' ? 'characters' : shown.type === 'item' ? 'items' : 'rooms';
+      sp.notebook[cat][shown.index] = 1;
+      addLog(`${other.name} showed a card to ${sp.name} (secret).`);
+    } else {
+      addLog(`${other.name} showed you: <strong>${cardData.icon || ''} ${cardData.name}</strong>`, 'reveal');
+      const cat = shown.type === 'character' ? 'characters' : shown.type === 'item' ? 'items' : 'rooms';
+      sp.notebook[cat][shown.index] = 1;
+      if (!sp.hints.some(h => h.type === shown.type && h.index === shown.index)) {
+        sp.hints.push({ type: shown.type, index: shown.index, shownBy: other.name });
+      }
+      renderNotebook();
+      showRevealModal(other.name, cardData);
+    }
+    updateTurnUI();
+  } else {
+    // Human player must choose which card to share
+    showShareCardModal(other, matchingCards, sp, suggestingPlayer);
+  }
+}
+
+function showShareCardModal(sharingPlayer, matchingCards, suggestingPlayer, suggestingIdx) {
+  const cardButtons = matchingCards.map((card, i) => {
+    const data = card.type === 'character' ? CHARACTERS[card.index] :
+                 card.type === 'item' ? ITEMS[card.index] : ROOMS[card.index];
+    return `<button class="action-btn" onclick="shareCard(${i})" style="margin:5px 0;text-align:center">
+      ${data.icon || ''} ${data.name} <span style="font-size:0.7rem;color:#888">(${card.type})</span>
+    </button>`;
+  }).join('');
+
+  // Store data for the callback
+  window._shareCardData = { sharingPlayer, matchingCards, suggestingPlayer: suggestingPlayer, suggestingIdx };
+
+  openModal(`
+    <h2>Your Turn to Share!</h2>
+    <p style="text-align:center;color:#aaa;margin-bottom:15px">
+      <strong>${suggestingPlayer.name}</strong> made a suggestion.<br>
+      <strong>${sharingPlayer.name}</strong>, you have a matching card! Choose one to show:
+    </p>
+    ${cardButtons}
+  `);
+}
+
+function shareCard(cardIndex) {
+  const data = window._shareCardData;
+  const shown = data.matchingCards[cardIndex];
+  const cardData = shown.type === 'character' ? CHARACTERS[shown.index] :
+                   shown.type === 'item' ? ITEMS[shown.index] : ROOMS[shown.index];
+  const sp = data.suggestingPlayer;
+  const other = data.sharingPlayer;
+
+  closeModal();
+
+  if (sp.isAI) {
+    const cat = shown.type === 'character' ? 'characters' : shown.type === 'item' ? 'items' : 'rooms';
+    sp.notebook[cat][shown.index] = 1;
+    addLog(`${other.name} showed a card to ${sp.name} (secret).`);
+  } else {
+    addLog(`${other.name} showed you: <strong>${cardData.icon || ''} ${cardData.name}</strong>`, 'reveal');
+    const cat = shown.type === 'character' ? 'characters' : shown.type === 'item' ? 'items' : 'rooms';
+    sp.notebook[cat][shown.index] = 1;
+    if (!sp.hints.some(h => h.type === shown.type && h.index === shown.index)) {
+      sp.hints.push({ type: shown.type, index: shown.index, shownBy: other.name });
+    }
+    renderNotebook();
+    showRevealModal(other.name, cardData);
+  }
   updateTurnUI();
+  delete window._shareCardData;
 }
 
 function showRevealModal(playerName, cardData) {
@@ -3111,9 +3172,15 @@ function doAITurn() {
     const itemGuess = pickUnknown(p, 'items', ITEMS.length);
     processSuggestion(currentPlayerIndex, charGuess, itemGuess, aiRoom);
 
-    setTimeout(() => {
+    // Only advance if no human card share is pending
+    function tryAdvance() {
+      if (window._shareCardData) {
+        setTimeout(tryAdvance, 300);
+        return;
+      }
       if (!gameOver) advanceTurn();
-    }, 600);
+    }
+    setTimeout(tryAdvance, 600);
   }, 600);
 }
 
