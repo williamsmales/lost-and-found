@@ -1073,94 +1073,6 @@ body {
 .action-btn.accuse { border-color: #c62828; }
 .action-btn.accuse:hover { background: rgba(198,40,40,0.15); }
 
-/* ── Hints Area ── */
-.hints-area {
-  padding: 15px;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
-  max-height: 280px;
-  overflow-y: auto;
-}
-
-.hints-empty {
-  font-size: 0.8rem;
-  color: #666;
-  font-style: italic;
-}
-
-.hints-category {
-  margin-bottom: 10px;
-}
-
-.hints-category h4 {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 5px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.hints-category h4.cat-person { color: var(--pink); }
-.hints-category h4.cat-item { color: var(--blue); }
-.hints-category h4.cat-room { color: var(--green); }
-
-.hint-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 3px 9px;
-  border-radius: 6px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  margin: 2px 3px 2px 0;
-}
-
-.hint-chip.eliminated {
-  text-decoration: line-through;
-  opacity: 0.85;
-}
-
-.hint-chip.person {
-  background: rgba(233,30,140,0.15);
-  color: var(--pink);
-  border: 1px solid rgba(233,30,140,0.3);
-}
-
-.hint-chip.item {
-  background: rgba(33,150,243,0.15);
-  color: var(--blue);
-  border: 1px solid rgba(33,150,243,0.3);
-}
-
-.hint-chip.room {
-  background: rgba(76,175,80,0.15);
-  color: var(--green);
-  border: 1px solid rgba(76,175,80,0.3);
-}
-
-.hint-from {
-  font-size: 0.6rem;
-  opacity: 0.6;
-  font-weight: 400;
-}
-
-.hints-summary {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 10px;
-  padding: 6px 8px;
-  background: rgba(255,255,255,0.03);
-  border-radius: 6px;
-  font-size: 0.7rem;
-}
-
-.hints-summary span {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
 .log-area {
   flex: 1;
   overflow-y: auto;
@@ -1526,10 +1438,6 @@ body {
         <div class="panel-title">Actions</div>
         <button id="suggest-btn" class="action-btn suggest" onclick="openSuggestion()" disabled>Make a Suggestion</button>
         <button id="accuse-btn" class="action-btn accuse" onclick="openAccusation()">Make an Accusation!</button>
-      </div>
-      <div class="hints-area" id="hints-area">
-        <div class="panel-title">Clues Received</div>
-        <div id="hints-content"><p class="hints-empty">No clues yet — make suggestions to gather intel!</p></div>
       </div>
       <div class="log-area">
         <h3>Game Log</h3>
@@ -2420,7 +2328,7 @@ function dismissNarrator() {
       renderBoard();
       renderNotebook();
       renderYourCards();
-      renderHints();
+  
       updateTurnUI();
       setTimeout(doAITurn, 800);
     } else if (gameMode === 'multi') {
@@ -2429,7 +2337,7 @@ function dismissNarrator() {
       renderBoard();
       renderNotebook();
       renderYourCards();
-      renderHints();
+  
       updateTurnUI();
       cardFanShown.add(currentPlayerIndex);
       showCardFan(currentPlayerIndex);
@@ -2654,105 +2562,6 @@ function renderYourCards() {
   }).join('');
 }
 
-function renderHints() {
-  const container = document.getElementById('hints-content');
-  const currentP = players[getActiveHumanIndex()];
-  const hintsReceived = currentP ? currentP.hints : [];
-  if (hintsReceived.length === 0) {
-    container.innerHTML = '<p class="hints-empty">No clues yet — make suggestions to gather intel!</p>';
-    return;
-  }
-
-  const personHints = hintsReceived.filter(h => h.type === 'character');
-  const itemHints = hintsReceived.filter(h => h.type === 'item');
-  const roomHints = hintsReceived.filter(h => h.type === 'room');
-
-  // Count remaining unknowns per category
-  const totalPersons = CHARACTERS.length;
-  const totalItems = ITEMS.length;
-  const totalRooms = ROOMS.length;
-
-  let html = '';
-
-  // Summary bar
-  html += `<div class="hints-summary">
-    <span style="color:var(--pink)">👧 ${personHints.length}/${totalPersons}</span>
-    <span style="color:var(--blue)">🎒 ${itemHints.length}/${totalItems}</span>
-    <span style="color:var(--green)">🏫 ${roomHints.length}/${totalRooms}</span>
-    <span style="color:var(--gold)">Total: ${hintsReceived.length}</span>
-  </div>`;
-
-  if (personHints.length > 0) {
-    html += `<div class="hints-category">
-      <h4 class="cat-person">👧 People Eliminated</h4>
-      <div>${personHints.map(h => {
-        const c = CHARACTERS[h.index];
-        return `<span class="hint-chip person eliminated">${c.icon} ${c.name} <span class="hint-from">via ${h.shownBy}</span></span>`;
-      }).join('')}</div>
-    </div>`;
-  }
-
-  if (itemHints.length > 0) {
-    html += `<div class="hints-category">
-      <h4 class="cat-item">🎒 Items Eliminated</h4>
-      <div>${itemHints.map(h => {
-        const item = ITEMS[h.index];
-        return `<span class="hint-chip item eliminated">${item.icon} ${item.name} <span class="hint-from">via ${h.shownBy}</span></span>`;
-      }).join('')}</div>
-    </div>`;
-  }
-
-  if (roomHints.length > 0) {
-    html += `<div class="hints-category">
-      <h4 class="cat-room">🏫 Rooms Eliminated</h4>
-      <div>${roomHints.map(h => {
-        const room = ROOMS[h.index];
-        return `<span class="hint-chip room eliminated">${room.icon} ${room.name} <span class="hint-from">via ${h.shownBy}</span></span>`;
-      }).join('')}</div>
-    </div>`;
-  }
-
-  // Show what's still unknown
-  const knownPersons = new Set(personHints.map(h => h.index));
-  const knownItems = new Set(itemHints.map(h => h.index));
-  const knownRooms = new Set(roomHints.map(h => h.index));
-  // Also include cards the player holds
-  const p = players[getActiveHumanIndex()];
-  if (p) {
-    p.cards.forEach(card => {
-      if (card.type === 'character') knownPersons.add(card.index);
-      else if (card.type === 'item') knownItems.add(card.index);
-      else if (card.type === 'room') knownRooms.add(card.index);
-    });
-  }
-
-  const unknownPersons = CHARACTERS.filter((_, i) => !knownPersons.has(i));
-  const unknownItems = ITEMS.filter((_, i) => !knownItems.has(i));
-  const unknownRooms = ROOMS.filter((_, i) => !knownRooms.has(i));
-
-  if (unknownPersons.length > 0 || unknownItems.length > 0 || unknownRooms.length > 0) {
-    html += `<div class="hints-category" style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.08)">
-      <h4 style="color:var(--gold)">🔍 Still Unknown</h4>`;
-    if (unknownPersons.length > 0) {
-      html += `<div style="margin-bottom:4px">${unknownPersons.map(c =>
-        `<span class="hint-chip person">${c.icon} ${c.name}</span>`
-      ).join('')}</div>`;
-    }
-    if (unknownItems.length > 0) {
-      html += `<div style="margin-bottom:4px">${unknownItems.map(item =>
-        `<span class="hint-chip item">${item.icon} ${item.name}</span>`
-      ).join('')}</div>`;
-    }
-    if (unknownRooms.length > 0) {
-      html += `<div>${unknownRooms.map(room =>
-        `<span class="hint-chip room">${room.icon} ${room.name}</span>`
-      ).join('')}</div>`;
-    }
-    html += `</div>`;
-  }
-
-  container.innerHTML = html;
-}
 
 function updateTurnUI() {
   if (gameOver) return;
@@ -3068,7 +2877,7 @@ function processSuggestion(suggestingPlayer, charIdx, itemIdx, roomIdx) {
           sp.hints.push({ type: shown.type, index: shown.index, shownBy: other.name });
         }
         renderNotebook();
-        renderHints();
+    
 
         showRevealModal(other.name, cardData);
       }
